@@ -5,7 +5,7 @@ from .settings import BASE_DIR
 # SECURITY SETTINGS
 ALLOWED_HOSTS = [
     os.environ.get('RENDER_EXTERNAL_HOSTNAME'),
-    'auto-eden-backend.onrender.com',
+    'ari-rnsp.onrender.com',
     'auto-eden.onrender.com',
 ]
 
@@ -51,7 +51,7 @@ CORS_EXPOSE_HEADERS = [
 
 CSRF_TRUSTED_ORIGINS = [
     'https://auto-eden.onrender.com',
-    'https://auto-eden-backend.onrender.com'
+    'https://ari-rnsp.onrender.com/'
 ]
 
 # MIDDLEWARE CONFIGURATION

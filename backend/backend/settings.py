@@ -13,7 +13,7 @@ SECRET_KEY = "django-insecure-igp4zng9i5t1zk@ry$7r964mw45rj#+*f#@)&5u#$d3ngh^w7$
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'zim-rec-backend.onrender.com',
+    'ari-rnsp.onrender.com',
     'zim-rec.co.zw',
     'localhost',
     '127.0.0.1'

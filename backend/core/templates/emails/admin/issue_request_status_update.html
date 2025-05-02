@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Issue Request Status Update</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #2c3e50;">Issue Request Status Update</h2>
+        
+        <p>Dear {{ user.username }},</p>
+        
+        <p>Your issue request for <strong>{{ issue_request.device.device_name }}</strong> 
+        has been updated to: <span style="color: #e74c3c; font-weight: bold;">{{ status|upper }}</span></p>
+        
+        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px;">
+            <h3 style="margin-top: 0; color: #34495e;">Request Details</h3>
+            <ul style="list-style-type: none; padding-left: 0;">
+                <li>Request ID: #{{ issue_request.id }}</li>
+                <li>Production Period: {{ issue_request.start_date|date }} - {{ issue_request.end_date|date }}</li>
+                <li>Amount: {{ issue_request.production_amount }} MWh</li>
+                <li>Last Updated: {{ issue_request.updated_at|date:"DATETIME_FORMAT" }}</li>
+            </ul>
+        </div>
+
+        {% if status == 'rejected' %}
+        <div style="background-color: #fff3cd; padding: 15px; border-radius: 5px; margin-top: 20px;">
+            <p style="margin: 0; color: #856404;">
+                Note: Please review the submission requirements and contact our support team if you need assistance.
+            </p>
+        </div>
+        {% endif %}
+
+        <p style="margin-top: 20px;">
+            <a href="{{ dashboard_url }}" style="background-color: #3498db; color: white; 
+            padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                View in Dashboard
+            </a>
+        </p>
+
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;">
+        
+        <p style="color: #7f8c8d;">
+            Best regards,<br>
+            <strong>{{ app_name }} Team</strong>
+        </p>
+    </div>
+</body>
+</html>

@@ -8,6 +8,9 @@ import Homepage from './components/home/home';
 import Navigation from './components/nav/nav';
 import About from './components/about/about';
 import Footer from './components/footer/footer';
+import IssueRequestDashboard from './components/dashboard/issueRequestdashboard';
+import UserDashboard from './components/dashboard/deviceDashboard';
+import ProfilePage from './components/profile/profile';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -37,14 +40,14 @@ function App() {
       <Routes>
           <Route path="/" element={<Homepage />} />
           <Route path="/about" element={<About />} />
-          {/*<Route path="/dashboard" element={<UserDashboard />} />*/}
-          {/*<Route path='/profile' element={<ProfilePage />} />*/}
+          <Route path="/devices" element={<UserDashboard />} />
+          <Route path='/profile' element={<ProfilePage />} />
           {/*<Route path="/help" element={<HelpCenter />} />*/}
           {/*<Route path="/gallery" element={<GalleryPage />} />*/}
           {/*<Route path="/documentation" element={<DocumentationPage />} />*/}
           {/*<Route path="/settings" element={<Settings />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/issue-requests" element={<IssueRequestDashboard />} />*/}
+          <Route path="/admin" element={<AdminDashboard />} />*/}
+          <Route path="/issue-requests" element={<IssueRequestDashboard />} />
         </Routes>
       </Layout>
     </BrowserRouter>

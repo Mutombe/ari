@@ -23,14 +23,14 @@ TIME_ZONE = 'UTC'
 USE_TZ = True
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',
+    'http://localhost:5174',
     'https://zim-rec.co.zw',
     'http://127.0.0.1:5173'
 ]
 
 CORS_TRUSTED_ORIGINS = [
     'https://zim-rec.co.zw/',
-    'http://localhost:5173',
+    'http://localhost:5174',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -193,21 +193,31 @@ AUTHENTICATION_BACKENDS = [
 
 WSGI_APPLICATION = "backend.wsgi.application"
 
-ADMIN_BASE_URL = 'https://zim-rec.co.zw/'
-ADMINS = [('Zim-Rec Admin', 'admin@zim-rec.co.zw')]
-APP_NAME = 'Zim-Rec'
+ADMIN_BASE_URL = 'africarecsintl.org'
+ADMINS = [('ARI Admin', 'simbamtombe@gmail.com')]
+APP_NAME = 'Africa RECs International'
 
 # settings.py
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.hostinger.com'  # Hostinger's SMTP server
-EMAIL_PORT = 587  # 465 for SSL
-EMAIL_USE_TLS = True  # Use False if using port 465
-EMAIL_USE_SSL = False  # Use True if using port 465
-EMAIL_HOST_USER = 'admin@zim-rec.co.zw'
-EMAIL_HOST_PASSWORD = 'adminZimrec@2060'  # Password you set in Hostinger email account
-DEFAULT_FROM_EMAIL = 'Zim-Rec <admin@zim-rec.co.zw>'
-SERVER_EMAIL = 'admin@zim-rec.co.zw'  # For error notifications
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#EMAIL_HOST = 'smtp.hostinger.com'  # Hostinger's SMTP server
+#EMAIL_PORT = 587  # 465 for SSL
+#EMAIL_USE_TLS = True  # Use False if using port 465
+#EMAIL_USE_SSL = False  # Use True if using port 465
+#EMAIL_HOST_USER = 'admin@zim-rec.co.zw'
+#EMAIL_HOST_PASSWORD = 'adminZimrec@2060'  # Password you set in Hostinger email account
+#DEFAULT_FROM_EMAIL = 'Zim-Rec <admin@zim-rec.co.zw>'
+#SERVER_EMAIL = 'admin@zim-rec.co.zw'  # For error notifications
 
+# Email Configuration (Development)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'simbamtombe@gmail.com'  # Your Gmail address
+EMAIL_HOST_PASSWORD = 'itzh jjkc hdmv csih'
+DEFAULT_FROM_EMAIL = 'info@africarecsintl.org'
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+SERVER_EMAIL = 'simbamtombe@gmail.com' 
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -215,11 +225,11 @@ SERVER_EMAIL = 'admin@zim-rec.co.zw'  # For error notifications
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'bzotuqo0khnb1zpfbaov',
-        'USER': 'uodas4jqktivae3abowk',
-        'PASSWORD': 'uPAOcFBMDgTMOhlc1Qen',
-        'HOST': 'bzotuqo0khnb1zpfbaov-postgresql.services.clever-cloud.com',
-        'PORT': '7120',
+        'NAME': 'bwwsenpd9xzpqlukjygz',
+        'USER': 'u2ivk9a79taxpcze08dc',
+        'PASSWORD': 'GB91fxWguftsiytE47Z7uv99Grgbkb',
+        'HOST': 'bwwsenpd9xzpqlukjygz-postgresql.services.clever-cloud.com',
+        'PORT': '50013',
     }
 }
 
@@ -228,6 +238,7 @@ DATABASES = {
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': (

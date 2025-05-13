@@ -16,7 +16,7 @@ SECRET_KEY = SECRET_KEY
 CORS_ALLOWED_ORIGINS = [
     'https://auto-eden.onrender.com',
     'https://www.auto-eden.onrender.com'
-    'http://localhost:5173',
+    'http://localhost:5174',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -81,10 +81,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'bdrldt8pm2zpmedpthty',
-        'USER': 'uqp8motrebrjmomwi5rj',
-        'PASSWORD': 'b194d9Ya0xA7oeF6GA2HYXXFqiZ98i',
-        'HOST': 'bdrldt8pm2zpmedpthty-postgresql.services.clever-cloud.com',
+        'NAME': 'bwwsenpd9xzpqlukjygz',
+        'USER': 'u2ivk9a79taxpcze08dc',
+        'PASSWORD': 'GB91fxWguftsiytE47Z7uv99Grgbkb',
+        'HOST': 'bwwsenpd9xzpqlukjygz-postgresql.services.clever-cloud.com',
         'PORT': '50013',
     }
 }

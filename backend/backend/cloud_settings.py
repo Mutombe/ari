@@ -16,7 +16,7 @@ SECRET_KEY = SECRET_KEY
 CORS_ALLOWED_ORIGINS = [
     'https://ari-1-fhv9.onrender.com',
     'https://www.ari-1-fhv9.onrender.com'
-    'http://localhost:5174',
+    'http://localhost:5173',
 ]
 
 CORS_ALLOW_CREDENTIALS = True

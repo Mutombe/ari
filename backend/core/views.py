@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Device, DeviceDocument, IssueRequest, Profile
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
-from .serializers import DeviceSerializer, DeviceDocumentSerializer, IssueRequestSerializer, UserSerializer, ProfileSerializer
+from .serializers import DeviceSerializer, DeviceDocumentSerializer, IssueRequestSerializer, UserSerializer, ProfileSerializer, UserRegistrationSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -17,7 +17,7 @@ class RegisterView(APIView):
     permission_classes = [AllowAny]
     
     def post(self, request):
-        serializer = UserSerializer(data=request.data)
+        serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             try:
                 with transaction.atomic():

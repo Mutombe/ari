@@ -9,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "username", "email", "password", "is_active", "is_staff", "is_superuser")
+        fields = ("id", "username", "email", "password", "is_active", "is_staff", "is_superuser", 'country')
 
     def validate_username(self, value):
         if User.objects.filter(username=value).exists():
@@ -23,6 +23,31 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
+    
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ("id", "username", "email", "password", "is_active", "is_staff", "is_superuser", "country")
+        extra_kwargs = {
+            'email': {'required': True},
+            'country': {'required': True}
+        }
+
+    def validate_username(self, value):
+        if User.objects.filter(username=value).exists():
+            raise serializers.ValidationError("Username already exists")
+        return value
+
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Email already exists")
+        return value
+
+    def create(self, validated_data):
+        return User.objects.create_user(**validated_data)
+
 
 class ProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source="user.username", required=False)

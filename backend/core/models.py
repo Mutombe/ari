@@ -2,6 +2,85 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User  
 from decimal import Decimal
+from django.contrib.auth.models import AbstractUser
+from django.utils.translation import gettext_lazy as _
+
+class CustomUser(AbstractUser):
+    """
+    Custom User model that extends the built-in User model
+    to include country information.
+    """
+    COUNTRY_CHOICES = [
+        ('Uganda', 'Uganda'),
+        ('Zambia', 'Zambia'),
+        ('Malawi', 'Malawi'),
+        ('Namibia', 'Namibia'),
+        ('Lesotho', 'Lesotho'),
+        ('Eswatini', 'Eswatini'),
+        ('Angola', 'Angola'),
+        ('DRC', 'DRC'),
+    ]
+    
+    country = models.CharField(
+        _("Country"),
+        max_length=20,
+        choices=COUNTRY_CHOICES,
+        blank=True,
+        null=True,
+        help_text=_("The country associated with this user account")
+    )
+
+    groups = models.ManyToManyField(
+        'auth.Group',
+        verbose_name='groups',
+        blank=True,
+        related_name='custom_user_set',
+        related_query_name='custom_user'
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        verbose_name='user permissions',
+        blank=True,
+        related_name='custom_user_set',
+        related_query_name='custom_user'
+    )
+    
+    class Meta:
+        verbose_name = _("user")
+        verbose_name_plural = _("users")
+
+    def __str__(self):
+        return self.username
+    
+    @property
+    def brand_name(self):
+        """Returns the brand name based on the user's country"""
+        brand_mapping = {
+            'Uganda': 'Ugarec',
+            'Zambia': 'Zamrec',
+            'Malawi': 'Malrec',
+            'Namibia': 'Namrec',
+            'Lesotho': 'Lesrec',
+            'Eswatini': 'Eswarec',
+            'Angola': 'Angrec',
+            'DRC': 'DRCrec',
+        }
+        return brand_mapping.get(self.country, 'Africa RECs')
+    
+    @property
+    def flag_emoji(self):
+        """Returns the flag emoji based on the user's country"""
+        flag_mapping = {
+            'Uganda': '🇺🇬',
+            'Zambia': '🇿🇲',
+            'Malawi': '🇲🇼',
+            'Namibia': '🇳🇦',
+            'Lesotho': '🇱🇸',
+            'Eswatini': '🇸🇿',
+            'Angola': '🇦🇴',
+            'DRC': '🇨🇩',
+        }
+        return flag_mapping.get(self.country, '')
     
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")

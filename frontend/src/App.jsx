@@ -11,6 +11,7 @@ import Footer from './components/footer/footer';
 import IssueRequestDashboard from './components/dashboard/issueRequestdashboard';
 import UserDashboard from './components/dashboard/deviceDashboard';
 import ProfilePage from './components/profile/profile';
+//import AdminDashboard from './components/dashboard/admin';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();

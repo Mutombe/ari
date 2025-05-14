@@ -1,4 +1,3 @@
-// components/AuthModals.jsx
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { motion } from 'framer-motion';
@@ -16,15 +15,30 @@ import {
   X,
   Lock,
   User,
-  AlertCircle
+  AlertCircle,
+  Flag
 } from 'lucide-react';
 import { login, register } from '../../redux/slices/authSlice';
 import { Logo } from './nav';
+import CountrySelector from './country';
+
+// Map of country names to their flag emojis and brand names
+const countryData = {
+  "Uganda": { flag: "🇺🇬", brand: "Ugarec" },
+  "Zambia": { flag: "🇿🇲", brand: "Zamrec" },
+  "Malawi": { flag: "🇲🇼", brand: "Malrec" },
+  "Namibia": { flag: "🇳🇦", brand: "Namrec" },
+  "Lesotho": { flag: "🇱🇸", brand: "Lesrec" },
+  "Eswatini": { flag: "🇸🇿", brand: "Eswarec" },
+  "Angola": { flag: "🇦🇴", brand: "Angrec" },
+  "DRC": { flag: "🇨🇩", brand: "DRCrec" },
+};
 
 export const AuthModals = ({ openType, onClose }) => {
   const dispatch = useDispatch();
   const { status, error } = useSelector(state => state.auth);
   const [view, setView] = useState(openType);
+  const [selectedCountry, setSelectedCountry] = useState(null);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -34,6 +48,7 @@ export const AuthModals = ({ openType, onClose }) => {
     email: "",
     password: "",
     username: "",
+    country: "",
   });
 
   useEffect(() => {
@@ -42,9 +57,20 @@ export const AuthModals = ({ openType, onClose }) => {
 
   useEffect(() => {
     if (openType) {
-      setFormData({ email: "", password: "", username: "" });
+      setFormData({ email: "", password: "", username: "", country: "" });
+      setSelectedCountry(null);
     }
   }, [openType]);
+
+  useEffect(() => {
+    if (selectedCountry) {
+      setFormData(prev => ({ ...prev, country: selectedCountry }));
+    }
+  }, [selectedCountry]);
+
+  const handleSelectCountry = (country) => {
+    setSelectedCountry(country);
+  };
 
   const handleSubmit = () => {
     if (view === "login") {
@@ -63,6 +89,15 @@ export const AuthModals = ({ openType, onClose }) => {
         })
         .catch(console.error);
     } else {
+      if (!selectedCountry && view === "register") {
+        setSnackbar({
+          open: true,
+          message: "Please select a country to register",
+          severity: "error",
+        });
+        return;
+      }
+      
       dispatch(register(formData))
         .unwrap()
         .then((response) => {
@@ -85,6 +120,83 @@ export const AuthModals = ({ openType, onClose }) => {
     return error.toString();
   };
 
+  const renderRegistrationForm = () => (
+    <>
+      <TextField
+        fullWidth
+        label="Email"
+        type="email"
+        value={formData.email}
+        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+        InputProps={{
+          startAdornment: <AtSign className="text-gray-400 mr-2" size={18} />,
+        }}
+      />
+      <Divider className="!my-4"></Divider>
+
+      <TextField
+        fullWidth
+        label="Username"
+        value={formData.username}
+        onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+        InputProps={{
+          startAdornment: <User className="text-gray-400 mr-2" size={18} />,
+        }}
+      />
+      <Divider className="!my-4"></Divider>
+
+      <TextField
+        fullWidth
+        label="Password"
+        type="password"
+        value={formData.password}
+        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+        InputProps={{
+          startAdornment: <Lock className="text-gray-400 mr-2" size={18} />,
+        }}
+      />
+      <Divider className="!my-4"></Divider>
+
+      {selectedCountry && (
+        <div className="flex items-center p-3 bg-gray-50 rounded mb-4">
+          <span className="text-2xl mr-3">{countryData[selectedCountry].flag}</span>
+          <div>
+            <p className="text-sm font-medium">{selectedCountry}</p>
+            <p className="text-xs text-gray-500">
+              Registering with {countryData[selectedCountry].brand}
+            </p>
+          </div>
+        </div>
+      )}
+    </>
+  );
+
+  const renderLoginForm = () => (
+    <>
+      <TextField
+        fullWidth
+        label="Username"
+        value={formData.username}
+        onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+        InputProps={{
+          startAdornment: <User className="text-gray-400 mr-2" size={18} />,
+        }}
+      />
+      <Divider className="!my-4"></Divider>
+
+      <TextField
+        fullWidth
+        label="Password"
+        type="password"
+        value={formData.password}
+        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+        InputProps={{
+          startAdornment: <Lock className="text-gray-400 mr-2" size={18} />,
+        }}
+      />
+    </>
+  );
+
   return (
     <>
       <Dialog open={!!openType} onClose={onClose} maxWidth="xs" fullWidth>
@@ -103,8 +215,17 @@ export const AuthModals = ({ openType, onClose }) => {
             </IconButton>
             
             <div className="text-center pt-4">
-              <div className="mx-auto w-16 h-16 mb-4">
-                <Logo />
+              <div className="mx-auto w-16 h-16 mb-4 flex items-center justify-center">
+                {selectedCountry ? (
+                  <div className="relative">
+                    <Logo />
+                    <span className="absolute -right-3 -bottom-3 text-2xl">
+                      {countryData[selectedCountry].flag}
+                    </span>
+                  </div>
+                ) : (
+                  <Logo />
+                )}
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
                 {view === "login" ? "Welcome Back!" : "Join Africa RECs"}
@@ -112,7 +233,9 @@ export const AuthModals = ({ openType, onClose }) => {
               <p className="text-gray-600">
                 {view === "login"
                   ? "Sign in to continue to your account"
-                  : "Create your free REC trading account"}
+                  : selectedCountry 
+                    ? `Create your free ${countryData[selectedCountry].brand} trading account`
+                    : "Create your free REC trading account"}
               </p>
             </div>
           </div>
@@ -127,64 +250,43 @@ export const AuthModals = ({ openType, onClose }) => {
           )}
 
           <div className="space-y-4">
-            {view === "register" && (
-              <TextField
-                fullWidth
-                label="Email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                InputProps={{
-                  startAdornment: <AtSign className="text-gray-400 mr-2" size={18} />,
-                }}
-              />
-            )}
-            <Divider className="!my-4"></Divider>
-
-            <TextField
-              fullWidth
-              label="Username"
-              value={formData.username}
-              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-              InputProps={{
-                startAdornment: <User className="text-gray-400 mr-2" size={18} />,
-              }}
-            />
-            <Divider className="!my-4"></Divider>
-
-            <TextField
-              fullWidth
-              label="Password"
-              type="password"
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              InputProps={{
-                startAdornment: <Lock className="text-gray-400 mr-2" size={18} />,
-              }}
-            />
+            {view === "register" 
+              ? renderRegistrationForm() 
+              : renderLoginForm()
+            }
           </div>
 
-          <Button
-            fullWidth
-            variant="contained"
-            size="large"
-            onClick={handleSubmit}
-            disabled={status === "loading"}
-            className="!bg-emerald-600 hover:!bg-emerald-700 !rounded-lg !py-3 !text-base !font-semibold"
-          >
-            {status === "loading" 
-              ? "Processing..." 
-              : view === "login" 
-                ? "Sign In" 
-                : "Create Account"}
-          </Button>
+          {view === "register" && !selectedCountry ? (
+            <CountrySelector 
+              selectedCountry={selectedCountry}
+              onSelectCountry={handleSelectCountry}
+            />
+          ) : (
+            <Button
+              fullWidth
+              variant="contained"
+              size="large"
+              onClick={handleSubmit}
+              disabled={status === "loading"}
+              className="!bg-emerald-600 hover:!bg-emerald-700 !rounded-lg !py-3 !text-base !font-semibold"
+            >
+              {status === "loading" 
+                ? "Processing..." 
+                : view === "login" 
+                  ? "Sign In" 
+                  : `Create ${selectedCountry ? countryData[selectedCountry].brand : ""} Account`}
+            </Button>
+          )}
 
           <Divider className="!my-6">or</Divider>
 
           <Button
             fullWidth
             variant="outlined"
-            onClick={() => onClose(view === "login" ? "register" : "login")}
+            onClick={() => {
+              setSelectedCountry(null);
+              onClose(view === "login" ? "register" : "login");
+            }}
             className="!border-emerald-600 !text-emerald-700 hover:!bg-emerald-50 !rounded-lg"
           >
             {view === "login"

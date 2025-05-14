@@ -183,6 +183,7 @@ const AdminDashboard = () => {
   const pendingStats = useSelector(selectPendingSubmissions);
   const energyStats = useSelector(selectEnergyTypeStatistics);
   const [showRejectModal, setShowRejectModal] = useState(false);
+  const isAdmin = user?.is_superuser;
   const [selectedDeviceForRejection, setSelectedDeviceForRejection] =
     useState(null);
   const { loading: devicesLoading, error: devicesError } = useSelector(

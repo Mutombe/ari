@@ -14,7 +14,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'ari-rnsp.onrender.com',
-    'zim-rec.co.zw',
+    'ari-1-fhv9.onrender.com',
     'localhost',
     '127.0.0.1'
 ]
@@ -24,12 +24,12 @@ USE_TZ = True
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5174',
-    'https://zim-rec.co.zw',
+    'https://ari-1-fhv9.onrender.com',
     'http://127.0.0.1:5173'
 ]
 
 CORS_TRUSTED_ORIGINS = [
-    'https://zim-rec.co.zw/',
+    'https://ari-1-fhv9.onrender.com',
     'http://localhost:5174',
 ]
 

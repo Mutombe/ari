@@ -6,7 +6,7 @@ from .settings import BASE_DIR
 ALLOWED_HOSTS = [
     os.environ.get('RENDER_EXTERNAL_HOSTNAME'),
     'ari-rnsp.onrender.com',
-    'auto-eden.onrender.com',
+    'ari-1-fhv9.onrender.com',
 ]
 
 DEBUG = False
@@ -14,8 +14,8 @@ SECRET_KEY = SECRET_KEY
 
 # CORS SETTINGS
 CORS_ALLOWED_ORIGINS = [
-    'https://auto-eden.onrender.com',
-    'https://www.auto-eden.onrender.com'
+    'https://ari-1-fhv9.onrender.com',
+    'https://www.ari-1-fhv9.onrender.com'
     'http://localhost:5174',
 ]
 
@@ -50,7 +50,7 @@ CORS_EXPOSE_HEADERS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://auto-eden.onrender.com',
+    'https://ari-1-fhv9.onrender.com',
     'https://ari-rnsp.onrender.com/'
 ]
 

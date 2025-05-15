@@ -17,12 +17,14 @@ import {
   Settings,
   Shield,
   HelpCircle,
+  SquarePlus,
   Flag,
 } from "lucide-react";
+import DeviceUploadStepper from "../dashboard/deviceStepper";
 import { motion, AnimatePresence } from "framer-motion";
 import { logout } from "../../redux/slices/authSlice";
 import { AuthModals } from "./auth";
-import { Avatar, Badge, Divider } from "@mui/material";
+import { Avatar, Badge, Divider, useMediaQuery, Fab, useTheme } from "@mui/material";
 
 const colors = {
   primary: "bg-emerald-600",
@@ -106,7 +108,11 @@ const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+   const theme = useTheme();
   const [authModalOpen, setAuthModalOpen] = useState(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+   const [open, setOpen] = useState(false);
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
   const isAdmin = user?.is_superuser;
@@ -131,8 +137,8 @@ const Navigation = () => {
 
   // Get brand name based on user's country
   const getBrandName = () => {
-    if (!userCountry) return "Africa RECs";
-    return countryBrands[userCountry] || "Africa RECs";
+    if (!userCountry) return "";
+    return countryBrands[userCountry] || "";
   };
 
   return (
@@ -143,7 +149,10 @@ const Navigation = () => {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center py-4">
             <Link to="/" className="flex items-center space-x-2">
-              <Logo country={userCountry} />
+            <img
+                src="/logo.png"
+                alt="HSP Logo"
+                className="w-22 h-15"/>
               <span className="text-xl font-bold">{getBrandName()}</span>
             </Link>
 
@@ -195,6 +204,9 @@ const Navigation = () => {
                     <Award className="mr-1 h-4 w-4" />
                     Requests
                   </Link>
+                  <button onClick={() => setOpen(true)}>
+                                <SquarePlus className="text-white" size={24} />
+                                </button>
                 </>
               )}
 
@@ -238,6 +250,7 @@ const Navigation = () => {
                           </div>
                         )}
                       </div>
+
                       <Link
                         to="/profile"
                         className="flex items-center px-4 py-2 hover:bg-gray-100"
@@ -325,6 +338,9 @@ const Navigation = () => {
                   </Link>
                   {user && (
                     <>
+                                <button onClick={() => setOpen(true)} className="px-4 py-2">
+                                <SquarePlus className="text-white" size={24} />
+                                </button>
                       <Link
                         to="/dashboard"
                         className="hover:bg-emerald-700 px-4 py-2 rounded"
@@ -384,6 +400,12 @@ const Navigation = () => {
           </AnimatePresence>
         </div>
       </nav>
+
+            <DeviceUploadStepper
+              open={open}
+              onClose={() => setOpen(false)}
+              fullScreen={isMobile}
+            />
 
       <AuthModals
         openType={authModalOpen}

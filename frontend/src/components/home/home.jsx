@@ -47,6 +47,7 @@ const colors = {
 // Home page
 const Homepage = () => {
   const [authModalOpen, setAuthModalOpen] = useState(null);
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
 
   return (
     <div className="bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 min-h-screen">
@@ -72,15 +73,36 @@ const Homepage = () => {
               through Renewable Energy Certificates.
             </p>
             <div className="flex flex-wrap gap-4">
-                <button className={`px-6 py-3 rounded-lg ${colors.accent} ${colors.accentHover} text-white font-bold text-lg transition duration-300 transform hover:scale-105`} onClick={() => setAuthModalOpen("register")} >
-                Get Started
+              {isAuthenticated ? (
+                <button
+                  className={`px-6 py-3 rounded-lg ${colors.accent} ${colors.accentHover} text-white font-bold text-lg transition duration-300 transform hover:scale-105`}
+                  onClick={() => setAuthModalOpen("register")}
+                >
+                  Devices
                 </button>
-              <Link
-                to="/about"
-                className="px-6 py-3 rounded-lg bg-white text-emerald-600 font-bold text-lg transition duration-300 transform hover:scale-105 hover:bg-gray-100"
-              >
-                Learn More
-              </Link>
+              ) : (
+                <button
+                  className={`px-6 py-3 rounded-lg ${colors.accent} ${colors.accentHover} text-white font-bold text-lg transition duration-300 transform hover:scale-105`}
+                  onClick={() => setAuthModalOpen("register")}
+                >
+                  Get Started
+                </button>
+              )}
+              {isAuthenticated ? (
+                <Link
+                  to="/issue-requests"
+                  className="px-6 py-3 rounded-lg bg-white text-emerald-600 font-bold text-lg transition duration-300 transform hover:scale-105 hover:bg-gray-100"
+                >
+                  Requests
+                </Link>
+              ) : (
+                <Link
+                  to="/about"
+                  className="px-6 py-3 rounded-lg bg-white text-emerald-600 font-bold text-lg transition duration-300 transform hover:scale-105 hover:bg-gray-100"
+                >
+                  Learn More
+                </Link>
+              )}
             </div>
           </motion.div>
         </div>
@@ -285,7 +307,7 @@ const Homepage = () => {
             on your contribution to a sustainable future.
           </p>
           <Link
-            onClick={() => setAuthModalOpen("register")} 
+            onClick={() => setAuthModalOpen("register")}
             className={`px-8 py-4 rounded-lg ${colors.accent} ${colors.accentHover} text-white font-bold text-lg transition duration-300 transform hover:scale-105`}
           >
             Get Started Now

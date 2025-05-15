@@ -16,7 +16,7 @@ SECRET_KEY = SECRET_KEY
 CORS_ALLOWED_ORIGINS = [
     'https://ari-1-fhv9.onrender.com',
     'https://www.ari-1-fhv9.onrender.com'
-    'http://localhost:5173',
+    'http://localhost:5174',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -106,7 +106,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-       'rest_framework.permissions.IsAuthenticated',
+       'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',

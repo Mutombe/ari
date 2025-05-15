@@ -23,13 +23,13 @@ TIME_ZONE = 'UTC'
 USE_TZ = True
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',
+    'http://localhost:5174',
     'https://ari-1-fhv9.onrender.com',
-    'http://127.0.0.1:5173'
+    'http://127.0.0.1:5174'
 ]
 
 CORS_TRUSTED_ORIGINS = [
-    'http://localhost:5173',
+    'http://localhost:5174',
     'https://ari-1-fhv9.onrender.com',
     
 ]

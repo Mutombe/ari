@@ -9,7 +9,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "username", "email", "password", "is_active", "is_staff", "is_superuser", 'country')
+        fields = ("id", "username", "email", "password", "is_active", "is_staff", "is_superuser")
+        extra_kwargs = {
+            'country': {'required': False}
+        }
 
     def validate_username(self, value):
         if User.objects.filter(username=value).exists():

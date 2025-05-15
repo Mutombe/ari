@@ -11,7 +11,7 @@ import Footer from './components/footer/footer';
 import IssueRequestDashboard from './components/dashboard/issueRequestdashboard';
 import UserDashboard from './components/dashboard/deviceDashboard';
 import ProfilePage from './components/profile/profile';
-//import AdminDashboard from './components/dashboard/admin';
+import AdminDashboard from './components/dashboard/admin';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -46,8 +46,8 @@ function App() {
           {/*<Route path="/help" element={<HelpCenter />} />*/}
           {/*<Route path="/gallery" element={<GalleryPage />} />*/}
           {/*<Route path="/documentation" element={<DocumentationPage />} />*/}
-          {/*<Route path="/settings" element={<Settings />} />
-          <Route path="/admin" element={<AdminDashboard />} />*/}
+          {/*<Route path="/settings" element={<Settings />} />*/}
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/issue-requests" element={<IssueRequestDashboard />} />
         </Routes>
       </Layout>

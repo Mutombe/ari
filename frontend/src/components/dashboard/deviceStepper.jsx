@@ -293,34 +293,99 @@ const DeviceUploadStepper = ({ open, onClose }) => {
   const [technologyOptions, setTechnologyOptions] = useState([]);
 
   const initialFormState = {
-    deviceName: "",
-    country: "",
-    capacity: "",
+    device_name: "",
+    issuer_organisation: "",
+    default_account_code: user?.id || "",
 
-    fuelType: "",
-    technologyType: "",
-    commissioningDate: "",
+    fuel_type: "",
+    technology_type: "",
+    capacity: "",
+    commissioning_date: "",
+    effective_date: "",
+
     address: "",
     latitude: "",
     longitude: "",
     postcode: "",
-    meterIds: "",
-    voltageLevel: "",
-    connectionType: "",
-    specsDoc: null,
-    locationMap: null,
-    certifications: null,
+
+    number_of_generating_units: 1,
+    meter_ids: "",
+    network_owner: "",
+    connection_voltage: "",
+    grid_connection_details: "",
+    volume_evidence_type: "Metering",
+    volume_evidence_other: "",
+    carbon_offset_registration: "",
+    labelling_scheme: "",
+    public_funding: "None",
+    funding_end_date: "",
+    onsite_consumer: "No",
+    onsite_consumer_details: "",
+    auxiliary_energy: "No",
+    auxiliary_energy_details: "",
+    electricity_import_details: "",
+
+    documents: {
+      sf02: null,
+      sf02c: null,
+      metering: null,
+      diagram: null,
+      photos: null,
+    },
+    additional_notes: "",
   };
 
   const [formData, setFormData] = useState(initialFormState);
   const requiredDocuments = ["specsDoc", "certifications"];
+  const DOCUMENT_TYPES = [
+    {
+      id: "sf02",
+      label: "Form SF-02 - Registration",
+      shortLabel: "SF-02 Form",
+      required: true,
+      accept: ".pdf",
+      description: "Official registration form",
+    },
+    {
+      id: "sf02c",
+      label: "SF-02C Owner's Declaration",
+      shortLabel: "SF-02C Form",
+      required: true,
+      accept: ".pdf,.doc,.docx",
+      description: "Declaration of ownership",
+    },
+    {
+      id: "metering",
+      label: "Metering Evidence",
+      shortLabel: "Metering",
+      required: true,
+      accept: ".pdf,.xls,.xlsx",
+      description: "Electricity metering confirmation",
+    },
+    {
+      id: "diagram",
+      label: "Single Line Diagram",
+      shortLabel: "Diagram",
+      required: true,
+      accept: ".pdf,.dwg,.dxf",
+      description: "Electrical system diagram",
+    },
+    {
+      id: "photos",
+      label: "Project Photos",
+      shortLabel: "Photos",
+      required: true,
+      accept: "image/*",
+      description: "Photos of installation",
+    },
+  ];
 
-  const steps = [
+  const steps1 = [
     {
       title: "Basic Info",
       icon: <Leaf size={24} />,
       color: "emerald",
-      fields: ["deviceName", "capacity"],
+      fields: ["device_name", "capacity"],
     },
     {
       title: "Tech Specs",
@@ -345,6 +410,58 @@ const DeviceUploadStepper = ({ open, onClose }) => {
       icon: <FileText size={24} />,
       color: "rose",
       fields: ["specsDoc", "locationMap", "certifications"],
+    },
+  ];
+
+  const fuelTechnologyMap = {
+    Solar: ["TC110", "TC120", "TC130", "TC140"],
+    Wind: ["TC210", "TC220"],
+    Hydro: ["TC310", "TC320", "TC330"],
+    Biomas: ["TC410", "TC411", "TC421", "TC422", "TC423", "TC424"],
+    Geothermal: ["TC510", "TC520", "TC530"],
+  };
+
+  const steps = [
+    {
+      id: 0,
+      title: "Basic Info",
+      icon: <Leaf size={24} />,
+      color: "emerald",
+      fields: ["device_name", "issuer_organisation"],
+    },
+    {
+      id: 1,
+      title: "Tech Specs",
+      icon: <Cpu size={24} />,
+      color: "amber",
+      fields: ["fuel_type", "technology_type", "capacity", "commissioning_date", "effective_date"],
+    },
+    {
+      id: 2,
+      title: "Location",
+      icon: <Globe size={24} />,
+      color: "blue",
+      fields: ["address", "latitude", "longitude", "postcode"],
+      
+    },
+    {
+      id: 3,
+      title: "Grid Data",
+      icon: <BatteryCharging size={24} />,
+      color: "blue",
+      fields: ["meter_ids", "network_owner", "connection_voltage", "grid_connection_details", "volume_evidence_type", "volume_evidence_other" ],
+    },
+    {
+      id: 4,
+      title: "Business Details",
+      icon: <Building size={24} />,
+      fields: ["onsite_consumer", "onsite_consumer_details", "auxiliary_energy", "auxiliary_energy_details", "electricity_import_details","carbon_offset_registration", "labelling_scheme", "public_funding", "funding_end_date" ],
+    },
+    {
+      id: 5,
+      title: "Documents",
+      icon: <FileText size={24} />,
+      fields: ["sf02", "sf02c", "metering", "diagram", "photos"],
     },
   ];
 
@@ -520,10 +637,10 @@ const DeviceUploadStepper = ({ open, onClose }) => {
               <TextField
                 label="Device Name"
                 name="deviceName"
-                value={formData.deviceName}
+                value={formData.device_name}
                 onChange={handleInputChange}
-                error={!!errors.deviceName}
-                helperText={errors.deviceName}
+                error={!!errors.device_name}
+                helperText={errors.device_name}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -553,11 +670,11 @@ const DeviceUploadStepper = ({ open, onClose }) => {
               </Grid>
               <TextField
                 label="Organisation"
-                name="deviceName"
-                value={formData.deviceName}
+                name="issuer_organisation"
+                value={formData.issuer_organisation}
                 onChange={handleInputChange}
-                error={!!errors.deviceName}
-                helperText={errors.deviceName}
+                error={!!errors.issuer_organisation}
+                helperText={errors.issuer_organisation}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -596,35 +713,35 @@ const DeviceUploadStepper = ({ open, onClose }) => {
                 <InputLabel>Technology Type</InputLabel>
                 <Select
                   name="technologyType"
-                  value={formData.technologyType}
+                  value={formData.technology_type}
                   onChange={handleInputChange}
                 >
                   <MenuItem value="Solar">Solar PV</MenuItem>
                   <MenuItem value="Wind">Wind Turbine</MenuItem>
                   <MenuItem value="Hydro">Hydroelectric</MenuItem>
                 </Select>
-                {errors.technologyType && (
+                {errors.technology_type && (
                   <p className="text-red-500 text-sm mt-1">
-                    {errors.technologyType}
+                    {errors.technology_type}
                   </p>
                 )}
               </FormControl>
 
-              <FormControl fullWidth error={!!errors.fuelType}>
+              <FormControl fullWidth error={!!errors.fuel_type}>
                 <InputLabel>Fuel Type</InputLabel>
                 <Select
-                  value={formData.fuelType}
+                  value={formData.fuel_type}
                   onChange={handleChange("fuelType")}
                   label="Fuel Type"
                 >
-                  {fuelTypes.map((type) => (
+                  {Object.keys(fuelTechnologyMap).map((type) => (
                     <MenuItem key={type} value={type}>
                       {type}
                     </MenuItem>
                   ))}
                 </Select>
-                {errors.fuelType && (
-                  <FormHelperText>{errors.fuelType}</FormHelperText>
+                {errors.fuel_type && (
+                  <FormHelperText>{errors.fuel_type}</FormHelperText>
                 )}
               </FormControl>
 
@@ -661,10 +778,10 @@ const DeviceUploadStepper = ({ open, onClose }) => {
                 label="Commissioning Date"
                 type="date"
                 name="commissioningDate"
-                value={formData.commissioningDate}
+                value={formData.commissioning_date}
                 onChange={handleInputChange}
-                error={!!errors.commissioningDate}
-                helperText={errors.commissioningDate}
+                error={!!errors.commissioning_date}
+                helperText={errors.commissioning_date}
                 InputLabelProps={{ shrink: true }}
               />
             </div>
@@ -729,25 +846,31 @@ const DeviceUploadStepper = ({ open, onClose }) => {
                 name="meterIds"
                 multiline
                 rows={2}
-                value={formData.meterIds}
+                value={formData.meter_ids}
                 onChange={handleInputChange}
-                error={!!errors.meterIds}
+                error={!!errors.meter_ids}
                 helperText={
-                  errors.meterIds || "Comma-separated list of meter IDs"
+                  errors.meter_ds || "Comma-separated list of meter IDs"
                 }
               />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <TextField
-                  label="Voltage Level"
-                  name="voltageLevel"
-                  value={formData.voltageLevel}
+                  label="Connection Voltage"
+                  name="connection_voltage"
+                  value={formData.connection_voltage}
                   onChange={handleInputChange}
                 />
                 <TextField
-                  label="Connection Type"
-                  name="connectionType"
-                  value={formData.connectionType}
+                  label="Network Owner"
+                  name="network_owner"
+                  value={formData.network_owner}
+                  onChange={handleInputChange}
+                />
+                <TextField
+                  label="Grid Connection Details"
+                  name="grid_connection_details"
+                  value={formData.grid_connection_details}
                   onChange={handleInputChange}
                 />
               </div>

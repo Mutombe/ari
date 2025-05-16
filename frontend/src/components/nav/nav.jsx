@@ -24,7 +24,14 @@ import DeviceUploadStepper from "../dashboard/deviceStepper";
 import { motion, AnimatePresence } from "framer-motion";
 import { logout } from "../../redux/slices/authSlice";
 import { AuthModals } from "./auth";
-import { Avatar, Badge, Divider, useMediaQuery, Fab, useTheme } from "@mui/material";
+import {
+  Avatar,
+  Badge,
+  Divider,
+  useMediaQuery,
+  Fab,
+  useTheme,
+} from "@mui/material";
 
 const colors = {
   primary: "bg-emerald-600",
@@ -58,43 +65,7 @@ const countryBrands = {
 
 export const Logo = ({ country = null }) => (
   <div className="flex items-center justify-center relative">
-    <svg viewBox="0 0 200 200" className="w-12 h-12">
-      <ellipse
-        cx="100"
-        cy="100"
-        rx="80"
-        ry="30"
-        fill="none"
-        stroke="#2ECC71"
-        strokeWidth="2"
-        transform="rotate(0 100 100)"
-      />
-      <ellipse
-        cx="100"
-        cy="100"
-        rx="80"
-        ry="30"
-        fill="none"
-        stroke="#2ECC71"
-        strokeWidth="2"
-        transform="rotate(60 100 100)"
-      />
-      <ellipse
-        cx="100"
-        cy="100"
-        rx="80"
-        ry="30"
-        fill="none"
-        stroke="#2ECC71"
-        strokeWidth="2"
-        transform="rotate(120 100 100)"
-      />
-      <circle cx="180" cy="100" r="6" fill="#2ECC71" />
-      <circle cx="60" cy="126" r="6" fill="#2ECC71" />
-      <circle cx="60" cy="74" r="6" fill="#2ECC71" />
-      <circle cx="100" cy="100" r="18" fill="#27AE60" />
-      <circle cx="100" cy="100" r="14" fill="#2ECC71" />
-    </svg>
+    <img src="/logo2.png" alt="HSP Logo" className="w-33 h-20" />
     {country && (
       <span className="absolute -right-3 -bottom-3 text-lg">
         {countryFlags[country]}
@@ -107,11 +78,11 @@ const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-   const theme = useTheme();
+  const theme = useTheme();
   const [authModalOpen, setAuthModalOpen] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-   const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
   const isAdmin = user?.is_superuser;
@@ -148,10 +119,7 @@ const Navigation = () => {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center py-4">
             <Link to="/" className="flex items-center space-x-2">
-            <img
-                src="/logo.png"
-                alt="HSP Logo"
-                className="w-22 h-15"/>
+              <img src="/logo.png" alt="HSP Logo" className="w-24 h-15" />
               <span className="text-xl font-bold">{getBrandName()}</span>
             </Link>
 
@@ -204,8 +172,8 @@ const Navigation = () => {
                     Requests
                   </Link>
                   <button onClick={() => setOpen(true)}>
-                                <SquarePlus className="text-white" size={24} />
-                                </button>
+                    <SquarePlus className="text-white" size={24} />
+                  </button>
                 </>
               )}
 
@@ -337,9 +305,12 @@ const Navigation = () => {
                   </Link>
                   {user && (
                     <>
-                                <button onClick={() => setOpen(true)} className="px-4 py-2">
-                                <SquarePlus className="text-white" size={24} />
-                                </button>
+                      <button
+                        onClick={() => setOpen(true)}
+                        className="px-4 py-2"
+                      >
+                        <SquarePlus className="text-white" size={24} />
+                      </button>
                       <Link
                         to="/dashboard"
                         className="hover:bg-emerald-700 px-4 py-2 rounded"
@@ -400,11 +371,11 @@ const Navigation = () => {
         </div>
       </nav>
 
-            <DeviceUploadStepper
-              open={open}
-              onClose={() => setOpen(false)}
-              fullScreen={isMobile}
-            />
+      <DeviceUploadStepper
+        open={open}
+        onClose={() => setOpen(false)}
+        fullScreen={isMobile}
+      />
 
       <AuthModals
         openType={authModalOpen}

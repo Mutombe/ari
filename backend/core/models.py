@@ -83,7 +83,7 @@ class CustomUser(AbstractUser):
         return flag_mapping.get(self.country, '')
     
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="profile")
     first_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100, blank=True)
     profile_picture = models.ImageField(

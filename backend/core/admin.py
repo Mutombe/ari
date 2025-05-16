@@ -1,6 +1,6 @@
 # account/admin.py
 from django.contrib import admin
-from .models import User, Profile, Device, IssueRequest
+from .models import User, Profile, Device, IssueRequest, CustomUser
 
 class AdminIssueRequestOverview(admin.ModelAdmin):
     list_display = (
@@ -31,3 +31,4 @@ class AdminDeviceOverview(admin.ModelAdmin):
 admin.site.register(IssueRequest, AdminIssueRequestOverview)
 admin.site.register(Profile, AdminProfileOverview)
 admin.site.register(Device, AdminDeviceOverview)
+admin.site.register(CustomUser)

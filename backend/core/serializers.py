@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Device, DeviceDocument, IssueRequest, Profile
+from .models import Device, DeviceDocument, IssueRequest, Profile, CustomUser
 from django.contrib.auth.models import User  
 from django.core.exceptions import ValidationError
 from decimal import Decimal
@@ -31,25 +31,24 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
     class Meta:
-        model = User
+        model = CustomUser
         fields = ("id", "username", "email", "password", "is_active", "is_staff", "is_superuser", "country")
         extra_kwargs = {
             'email': {'required': True},
-            'country': {'required': True}
         }
 
     def validate_username(self, value):
-        if User.objects.filter(username=value).exists():
+        if CustomUser.objects.filter(username=value).exists():
             raise serializers.ValidationError("Username already exists")
         return value
 
     def validate_email(self, value):
-        if User.objects.filter(email=value).exists():
+        if CustomUser.objects.filter(email=value).exists():
             raise serializers.ValidationError("Email already exists")
         return value
 
     def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
+        return CustomUser.objects.create_user(**validated_data)
 
 
 class ProfileSerializer(serializers.ModelSerializer):

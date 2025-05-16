@@ -22,14 +22,15 @@ class RegisterView(APIView):
             try:
                 with transaction.atomic():
                     user = serializer.save(is_active=True)
-                    # Let the signal handle profile creation
+                    # Explicitly create profile after user commit
+                    transaction.on_commit(lambda: Profile.objects.create(user=user))
                     
                     refresh = RefreshToken.for_user(user)
                     return Response({
                         "detail": "Registration successful",
                         "access": str(refresh.access_token),
                         "refresh": str(refresh),
-                        "user": UserSerializer(user).data
+                        "user": UserRegistrationSerializer(user).data
                     }, status=status.HTTP_201_CREATED)
             except Exception as e:
                 return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)

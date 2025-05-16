@@ -222,7 +222,7 @@ export const AuthModals = ({ openType, onClose }) => {
             </IconButton>
 
             <div className="text-center pt-4">
-              <div className="mx-auto w-16 h-16 mb-4 flex items-center justify-center">
+              <div className="mx-auto w-26 h-16 mb-4 flex items-center justify-center">
                 {selectedCountry ? (
                   <div className="relative">
                     <Logo />

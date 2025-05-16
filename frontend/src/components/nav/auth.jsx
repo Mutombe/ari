@@ -1,42 +1,45 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { motion } from 'framer-motion';
-import { 
-  Dialog, 
-  TextField, 
-  Divider, 
-  Button, 
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { motion } from "framer-motion";
+import {
+  Dialog,
+  TextField,
+  Divider,
+  Button,
   Alert,
   Snackbar,
-  IconButton
-} from '@mui/material';
-import { 
-  AtSign,
-  X,
-  Lock,
-  User,
-  AlertCircle,
-  Flag
-} from 'lucide-react';
-import { login, register } from '../../redux/slices/authSlice';
-import { Logo } from './nav';
-import CountrySelector from './country';
+  IconButton,
+} from "@mui/material";
+import { AtSign, X, Lock, User, AlertCircle, Flag } from "lucide-react";
+import { login, register } from "../../redux/slices/authSlice";
+import { Logo } from "./nav";
+import CountrySelector from "./country";
+
+const countryBrands = {
+  Uganda: "UG-REC",
+  Zambia: "ZAM-REC",
+  Malawi: "MALAWI-REC",
+  Namibia: "NAM-REC",
+  Lesotho: "LESOTHO-RECs",
+  Angola: "ANGOLA-REC",
+  DRC: "CONGO-REC",
+};
 
 // Map of country names to their flag emojis and brand names
 const countryData = {
-  "Uganda": { flag: "🇺🇬", brand: "Ugarec" },
-  "Zambia": { flag: "🇿🇲", brand: "Zamrec" },
-  "Malawi": { flag: "🇲🇼", brand: "Malrec" },
-  "Namibia": { flag: "🇳🇦", brand: "Namrec" },
-  "Lesotho": { flag: "🇱🇸", brand: "Lesrec" },
-  "Eswatini": { flag: "🇸🇿", brand: "Eswarec" },
-  "Angola": { flag: "🇦🇴", brand: "Angrec" },
-  "DRC": { flag: "🇨🇩", brand: "DRCrec" },
+  Uganda: { flag: "🇺🇬", brand: "UG-REC" },
+  Zambia: { flag: "🇿🇲", brand: "ZAM-REC" },
+  Malawi: { flag: "🇲🇼", brand: "MALAWI-REC" },
+  Namibia: { flag: "🇳🇦", brand: "NAM-REC" },
+  Lesotho: { flag: "🇱🇸", brand: "LESOTHO-RECs" },
+  //"Eswatini": { flag: "🇸🇿", brand: "Eswarec" },
+  Angola: { flag: "🇦🇴", brand: "ANGOLA-REC" },
+  DRC: { flag: "🇨🇩", brand: "CONGO-REC" },
 };
 
 export const AuthModals = ({ openType, onClose }) => {
   const dispatch = useDispatch();
-  const { status, error } = useSelector(state => state.auth);
+  const { status, error } = useSelector((state) => state.auth);
   const [view, setView] = useState(openType);
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [snackbar, setSnackbar] = useState({
@@ -64,7 +67,7 @@ export const AuthModals = ({ openType, onClose }) => {
 
   useEffect(() => {
     if (selectedCountry) {
-      setFormData(prev => ({ ...prev, country: selectedCountry }));
+      setFormData((prev) => ({ ...prev, country: selectedCountry }));
     }
   }, [selectedCountry]);
 
@@ -74,16 +77,18 @@ export const AuthModals = ({ openType, onClose }) => {
 
   const handleSubmit = () => {
     if (view === "login") {
-      dispatch(login({ 
-        username: formData.username, 
-        password: formData.password 
-      }))
+      dispatch(
+        login({
+          username: formData.username,
+          password: formData.password,
+        })
+      )
         .unwrap()
         .then(() => {
-          setSnackbar({ 
-            open: true, 
-            message: "Logged in successfully!", 
-            severity: "success" 
+          setSnackbar({
+            open: true,
+            message: "Logged in successfully!",
+            severity: "success",
           });
           onClose();
         })
@@ -97,7 +102,7 @@ export const AuthModals = ({ openType, onClose }) => {
         });
         return;
       }
-      
+
       dispatch(register(formData))
         .unwrap()
         .then((response) => {
@@ -106,7 +111,7 @@ export const AuthModals = ({ openType, onClose }) => {
             message: "Registration successful! Please login",
             severity: "success",
           });
-          onClose('login');
+          onClose("login");
         })
         .catch(console.error);
     }
@@ -159,7 +164,9 @@ export const AuthModals = ({ openType, onClose }) => {
 
       {selectedCountry && (
         <div className="flex items-center p-3 bg-gray-50 rounded mb-4">
-          <span className="text-2xl mr-3">{countryData[selectedCountry].flag}</span>
+          <span className="text-2xl mr-3">
+            {countryData[selectedCountry].flag}
+          </span>
           <div>
             <p className="text-sm font-medium">{selectedCountry}</p>
             <p className="text-xs text-gray-500">
@@ -200,7 +207,7 @@ export const AuthModals = ({ openType, onClose }) => {
   return (
     <>
       <Dialog open={!!openType} onClose={onClose} maxWidth="xs" fullWidth>
-        <motion.div 
+        <motion.div
           className="p-6 space-y-6"
           initial={{ scale: 0.95 }}
           animate={{ scale: 1 }}
@@ -213,7 +220,7 @@ export const AuthModals = ({ openType, onClose }) => {
             >
               <X className="h-5 w-5" />
             </IconButton>
-            
+
             <div className="text-center pt-4">
               <div className="mx-auto w-16 h-16 mb-4 flex items-center justify-center">
                 {selectedCountry ? (
@@ -233,9 +240,9 @@ export const AuthModals = ({ openType, onClose }) => {
               <p className="text-gray-600">
                 {view === "login"
                   ? "Sign in to continue to your account"
-                  : selectedCountry 
-                    ? `Create your free ${countryData[selectedCountry].brand} trading account`
-                    : "Create your free REC trading account"}
+                  : selectedCountry
+                  ? `Create your free ${countryData[selectedCountry].brand} trading account`
+                  : "Create your free REC trading account"}
               </p>
             </div>
           </div>
@@ -250,14 +257,11 @@ export const AuthModals = ({ openType, onClose }) => {
           )}
 
           <div className="space-y-4">
-            {view === "register" 
-              ? renderRegistrationForm() 
-              : renderLoginForm()
-            }
+            {view === "register" ? renderRegistrationForm() : renderLoginForm()}
           </div>
 
           {view === "register" && !selectedCountry ? (
-            <CountrySelector 
+            <CountrySelector
               selectedCountry={selectedCountry}
               onSelectCountry={handleSelectCountry}
             />
@@ -270,11 +274,13 @@ export const AuthModals = ({ openType, onClose }) => {
               disabled={status === "loading"}
               className="!bg-emerald-600 hover:!bg-emerald-700 !rounded-lg !py-3 !text-base !font-semibold"
             >
-              {status === "loading" 
-                ? "Processing..." 
-                : view === "login" 
-                  ? "Sign In" 
-                  : `Create ${selectedCountry ? countryData[selectedCountry].brand : ""} Account`}
+              {status === "loading"
+                ? "Processing..."
+                : view === "login"
+                ? "Sign In"
+                : `Create ${
+                    selectedCountry ? countryData[selectedCountry].brand : ""
+                  } Account`}
             </Button>
           )}
 
@@ -299,10 +305,10 @@ export const AuthModals = ({ openType, onClose }) => {
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
-        onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
+        onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
       >
-        <Alert 
-          severity={snackbar.severity} 
+        <Alert
+          severity={snackbar.severity}
           className="!items-center"
           iconMapping={{ error: <AlertCircle className="w-5 h-5" /> }}
         >

@@ -11,14 +11,14 @@ import { ChevronDown } from 'lucide-react';
 
 // Map of country names to their flag emojis and brand names
 const countryData = {
-  "Uganda": { flag: "🇺🇬", brand: "Ugarec" },
-  "Zambia": { flag: "🇿🇲", brand: "Zamrec" },
-  "Malawi": { flag: "🇲🇼", brand: "Malrec" },
-  "Namibia": { flag: "🇳🇦", brand: "Namrec" },
-  "Lesotho": { flag: "🇱🇸", brand: "Lesrec" },
-  "Eswatini": { flag: "🇸🇿", brand: "Eswarec" },
-  "Angola": { flag: "🇦🇴", brand: "Angrec" },
-  "DRC": { flag: "🇨🇩", brand: "DRCrec" },
+    Uganda: { flag: "🇺🇬", brand: "UG-REC" },
+    Zambia: { flag: "🇿🇲", brand: "ZAM-REC" },
+    Malawi: { flag: "🇲🇼", brand: "MALAWI-REC" },
+    Namibia: { flag: "🇳🇦", brand: "NAM-REC" },
+    Lesotho: { flag: "🇱🇸", brand: "LESOTHO-RECs" },
+    //"Eswatini": { flag: "🇸🇿", brand: "Eswarec" },
+    Angola: { flag: "🇦🇴", brand: "ANGOLA-REC" },
+    DRC: { flag: "🇨🇩", brand: "CONGO-REC" },
 };
 
 const CountrySelector = ({ selectedCountry, onSelectCountry }) => {

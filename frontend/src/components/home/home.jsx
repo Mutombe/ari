@@ -1,5 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   BrowserRouter as Router,
   Routes,
@@ -48,6 +49,7 @@ const colors = {
 const Homepage = () => {
   const [authModalOpen, setAuthModalOpen] = useState(null);
   const { user, isAuthenticated } = useSelector((state) => state.auth);
+  const navigate = useNavigate()
 
   return (
     <div className="bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 min-h-screen">
@@ -76,7 +78,7 @@ const Homepage = () => {
               {isAuthenticated ? (
                 <button
                   className={`px-6 py-3 rounded-lg ${colors.accent} ${colors.accentHover} text-white font-bold text-lg transition duration-300 transform hover:scale-105`}
-                  onClick={() => setAuthModalOpen("register")}
+                  onClick={() => navigate("/devices")}
                 >
                   Devices
                 </button>

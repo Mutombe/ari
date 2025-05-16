@@ -4,7 +4,7 @@ from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
-from .models import Device, IssueRequest, Profile
+from .models import Device, IssueRequest, Profile, CustomUser
 from django.db import transaction
 from django.contrib.auth.models import User  
 
@@ -184,13 +184,13 @@ def handle_issue_request_status_change(sender, instance, **kwargs):
     if instance.status_changed:
         send_status_email(instance.user, 'issue_request', instance.status)
 
-@receiver(post_save, sender=User)
+@receiver(post_save, sender=CustomUser)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         # Use transaction to ensure User is committed first
         transaction.on_commit(lambda: Profile.objects.create(user=instance))
 
-@receiver(post_save, sender=User)
+@receiver(post_save, sender=CustomUser)
 def save_user_profile(sender, instance, **kwargs):
     if hasattr(instance, 'profile'):
         instance.profile.save()

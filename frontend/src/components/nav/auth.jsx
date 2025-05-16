@@ -15,17 +15,6 @@ import { login, register } from "../../redux/slices/authSlice";
 import { Logo } from "./nav";
 import CountrySelector from "./country";
 
-const countryBrands = {
-  Uganda: "UG-REC",
-  Zambia: "ZAM-REC",
-  Malawi: "MALAWI-REC",
-  Namibia: "NAM-REC",
-  Lesotho: "LESOTHO-RECs",
-  Angola: "ANGOLA-REC",
-  DRC: "CONGO-REC",
-};
-
-// Map of country names to their flag emojis and brand names
 const countryData = {
   Uganda: { flag: "🇺🇬", brand: "UG-REC" },
   Zambia: { flag: "🇿🇲", brand: "ZAM-REC" },

@@ -47,14 +47,13 @@ const countryFlags = {
 
 // Map of country names to their brand names
 const countryBrands = {
-  Uganda: "Ugarec",
-  Zambia: "Zamrec",
-  Malawi: "Malrec",
-  Namibia: "Namrec",
-  Lesotho: "Lesrec",
-  Eswatini: "Eswarec",
-  Angola: "Angrec",
-  DRC: "DRCrec",
+  Uganda: "UG-REC",
+  Zambia: "ZAM-REC",
+  Malawi: "MALAWI-REC",
+  Namibia: "NAM-REC",
+  Lesotho: "LESOTHO-RECs",
+  Angola: "ANGOLA-REC",
+  DRC: "CONGO-REC",
 };
 
 export const Logo = ({ country = null }) => (
@@ -195,7 +194,7 @@ const Navigation = () => {
                     className="hover:text-amber-200 transition flex items-center"
                   >
                     <Smartphone className="mr-1 h-4 w-4" />
-                    Devices
+                    Generators
                   </Link>
                   <Link
                     to="/issue-requests"

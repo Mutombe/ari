@@ -13,6 +13,7 @@ import UserDashboard from './components/dashboard/deviceDashboard';
 import ProfilePage from './components/profile/profile';
 import AdminDashboard from './components/dashboard/admin';
 import ResetPasswordPage from './components/nav/passwordReset';
+import NewsPage from './components/about/news';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -47,7 +48,7 @@ function App() {
           {/*<Route path="/help" element={<HelpCenter />} />*/}
           {/*<Route path="/gallery" element={<GalleryPage />} />*/}
           {/*<Route path="/documentation" element={<DocumentationPage />} />*/}
-          {/*<Route path="/settings" element={<Settings />} />*/}
+          <Route path="/news" element={<NewsPage />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/issue-requests" element={<IssueRequestDashboard />} />

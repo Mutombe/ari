@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Device, DeviceDocument, IssueRequest, Profile, CustomUser
+from .models import Device, DeviceDocument, IssueRequest, CustomUser
 from django.contrib.auth.models import User  
 from django.core.exceptions import ValidationError
 from decimal import Decimal
@@ -51,10 +51,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             with transaction.atomic():
             # Create user
                 user = CustomUser.objects.create_user(**validated_data)
-            
-            # Create Profile explicitly
-                Profile.objects.create(user=user)
-            
                 return user
         except Exception as e:
             raise serializers.ValidationError({"detail": f"User creation failed: {str(e)}"})
@@ -65,7 +61,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source="user.email", read_only=True)
 
     class Meta:
-        model = Profile
+        model = ''
         fields = [
             "id",
             "username",

@@ -2,7 +2,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import Device, DeviceDocument, IssueRequest, Profile
+from .models import Device, DeviceDocument, IssueRequest
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from .serializers import DeviceSerializer, DeviceDocumentSerializer, IssueRequestSerializer, UserSerializer, ProfileSerializer, UserRegistrationSerializer
@@ -40,11 +40,7 @@ class RegisterView(APIView):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             try:
-                with transaction.atomic():
                     user = serializer.save(is_active=True)
-                    # Explicitly create profile
-                    profile = Profile.objects.create(user=user)
-                    
                     refresh = RefreshToken.for_user(user)
                     return Response({
                         "detail": "Registration successful",
@@ -69,41 +65,44 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
     
-class ProfileView(APIView):
-    parser_classes = [MultiPartParser, FormParser]
+#class ProfileView(APIView):
+ 
+ #   parser_classes = [MultiPartParser, FormParser]
 
-    def get(self, request):
-        try:
-            profile = request.user.profile
-            serializer = ProfileSerializer(profile)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Profile.DoesNotExist:
-            return Response(
-                {"detail": "Profile not found"}, status=status.HTTP_404_NOT_FOUND
-            )
+  #  def get(self, request):
+   #     try:
+    #        profile = request.user.profile
+     #       serializer = ProfileSerializer(profile)
+      
+      #      return Response(serializer.data, status=status.HTTP_200_OK)
+       # except Profile.DoesNotExist:
+        #    return Response(
+         #       {"detail": "Profile not found"}, status=status.HTTP_404_NOT_FOUND
+          #  )
 
-    def put(self, request):
-        try:
-            profile = request.user.profile
-            serializer = ProfileSerializer(profile, data=request.data, partial=True)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except Profile.DoesNotExist:
-            return Response(
-                {"detail": "Profile not found"}, status=status.HTTP_404_NOT_FOUND
-            )
+    #def put(self, request):
+     #   try:
+      #      profile = request.user.profile
+       #     serializer = ProfileSerializer(profile, data=request.data, partial=True)
+        #    if serializer.is_valid():
+         #       serializer.save()
+          #      return Response(serializer.data, status=status.HTTP_200_OK)
+           # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        #except Profile.DoesNotExist:
+         #   return Response(
+          #      {"detail": "Profile not found"}, status=status.HTTP_404_NOT_FOUND
+           # )
         
-    def get(self, request):
-        try:
-            profile = request.user.profile
-        except Profile.DoesNotExist:
+    #def get(self, request):
+     
+     #   try:
+      #      profile = request.user.profile
+       # except Profile.DoesNotExist:
         # Temporary fix until signals work
-            profile = Profile.objects.create(user=request.user)
+        #    profile = Profile.objects.create(user=request.user)
         
-        serializer = ProfileSerializer(profile)
-        return Response(serializer.data)
+        #serializer = ProfileSerializer(profile)
+        #return Response(serializer.data)
     
 class FuelOptionsView(APIView):
     def get(self, request):

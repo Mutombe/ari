@@ -3,7 +3,7 @@ from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
-from .models import Device, IssueRequest, Profile, CustomUser
+from .models import Device, IssueRequest, CustomUser
 from django.db import transaction
 from django.contrib.auth.models import User  
 from django.core.mail import EmailMultiAlternatives
@@ -15,7 +15,7 @@ from django.conf import settings
 import logging
 logger = logging.getLogger(__name__)
 
-ADMIN_EMAILS = ['simbamtombe@gmail.com','kuda@africacarbontraining.com']
+ADMIN_EMAILS = ['simbamtombe@gmail.com','kuda@africarbontraining.com', 'shyline@africarbontraining.com', 'trevor@africarbontraining.com', 'simbarashemutombe1@gmail.com']
 
 def send_admin_notification(subject, context, template_base):
 
@@ -191,16 +191,16 @@ def handle_issue_request_status_change(sender, instance, **kwargs):
     if instance.status_changed:
         send_status_email(instance.user, 'issue_request', instance.status)
 
-@receiver(post_save, sender=CustomUser)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
+#@receiver(post_save, sender=CustomUser)
+#def create_user_profile(sender, instance, created, **kwargs):
+ #   if created:
         # Defer Profile creation until the transaction is committed
-        transaction.on_commit(lambda: Profile.objects.create(user=instance))
+  #      transaction.on_commit(lambda: Profile.objects.create(user=instance))
 
-@receiver(post_save, sender=CustomUser)
-def save_user_profile(sender, instance, **kwargs):
-    if hasattr(instance, 'profile'):
-        instance.profile.save()
+#@receiver(post_save, sender=CustomUser)
+#def save_user_profile(sender, instance, **kwargs):
+ #   if hasattr(instance, 'profile'):
+  #      instance.profile.save()
 
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):

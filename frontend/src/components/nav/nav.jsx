@@ -226,14 +226,14 @@ const Navigation = () => {
                         Profile
                       </Link>
                       <Link
-                        to="/settings"
+                        to="/profile"
                         className="flex items-center px-4 py-2 hover:bg-gray-100"
                       >
                         <Settings className="h-4 w-4 mr-3" />
                         Settings
                       </Link>
                       <Link
-                        to="/security"
+                        to="/profile"
                         className="flex items-center px-4 py-2 hover:bg-gray-100"
                       >
                         <Shield className="h-4 w-4 mr-3" />

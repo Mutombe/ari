@@ -15,6 +15,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'ari-rnsp.onrender.com',
     'ari-1-fhv9.onrender.com',
+    'africarecs.com',
     'localhost',
     '127.0.0.1'
 ]
@@ -25,12 +26,14 @@ USE_TZ = True
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5174',
     'https://ari-1-fhv9.onrender.com',
+    'https://africarecs.com',
     'http://127.0.0.1:5174'
 ]
 
 CORS_TRUSTED_ORIGINS = [
     'http://localhost:5174',
     'https://ari-1-fhv9.onrender.com',
+    'https://africarecs.com'
     
 ]
 

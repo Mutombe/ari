@@ -199,7 +199,7 @@ const About = () => {
                   </svg>
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Email Us</h3>
-                <p>info@africarecsintl.org</p>
+                <p>info@africarecs.com</p>
               </div>
               
               <div className="bg-emerald-700 p-6 rounded-lg">
@@ -208,8 +208,11 @@ const About = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Call Us</h3>
-                <p>+254 712 345 678</p>
+                <h3 className="text-xl font-semibold mb-2">Call Us</h3> 
+                <p>+260 961375645</p>
+                <p>+263 71 678 0112</p>
+                <p>+263 77 770 0465</p>
+               
               </div>
               
               <div className="bg-emerald-700 p-6 rounded-lg">
@@ -220,7 +223,8 @@ const About = () => {
                   </svg>
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Visit Us</h3>
-                <p>Kilimani Business Centre, Nairobi, Kenya</p>
+                <p>68 Independence Avenue, Lusaka, Zambia</p>
+                <p>8 Jackson Rd, Hillside Harare, Zimbabwe</p>
               </div>
             </div>
             

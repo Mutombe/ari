@@ -3,6 +3,7 @@ from .models import Device, DeviceDocument, IssueRequest, Profile, CustomUser
 from django.contrib.auth.models import User  
 from django.core.exceptions import ValidationError
 from decimal import Decimal
+from django.db import transaction
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
@@ -44,9 +45,19 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         if CustomUser.objects.filter(email=value).exists():
             raise serializers.ValidationError("Email already exists")
         return value
-
+        
     def create(self, validated_data):
-        return CustomUser.objects.create_user(**validated_data)
+        try:
+            with transaction.atomic():
+            # Create user
+                user = CustomUser.objects.create_user(**validated_data)
+            
+            # Create Profile explicitly
+                Profile.objects.create(user=user)
+            
+                return user
+        except Exception as e:
+            raise serializers.ValidationError({"detail": f"User creation failed: {str(e)}"})
 
 
 class ProfileSerializer(serializers.ModelSerializer):

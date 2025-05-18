@@ -1,6 +1,30 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../utils/utils";
 
+export const requestPasswordReset = createAsyncThunk(
+  "auth/requestPasswordReset",
+  async (email, { rejectWithValue }) => {
+    try {
+      await api.post("password-reset/", { email });
+      return { email };
+    } catch (err) {
+      return rejectWithValue(err.response?.data || { detail: "Failed to send reset email." });
+    }
+  }
+);
+
+export const confirmPasswordReset = createAsyncThunk(
+  "auth/confirmPasswordReset",
+  async ({ token, password }, { rejectWithValue }) => {
+    try {
+      await api.post("password-reset/confirm/", { token, password });
+      return;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || { detail: "Failed to reset password." });
+    }
+  }
+);
+
 export const login = createAsyncThunk(
   "auth/login",
   async (credentials, { rejectWithValue }) => {
@@ -124,6 +148,30 @@ const authSlice = createSlice({
       .addCase(resendVerificationEmail.fulfilled, (state) => {
         state.status = "succeeded";
         state.error = null;
+      })
+      .addCase(requestPasswordReset.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(requestPasswordReset.fulfilled, (state) => {
+        state.status = "succeeded";
+        state.error = null;
+      })
+      .addCase(requestPasswordReset.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(confirmPasswordReset.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(confirmPasswordReset.fulfilled, (state) => {
+        state.status = "succeeded";
+        state.error = null;
+      })
+      .addCase(confirmPasswordReset.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
       });
   },
 });

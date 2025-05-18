@@ -12,6 +12,7 @@ import IssueRequestDashboard from './components/dashboard/issueRequestdashboard'
 import UserDashboard from './components/dashboard/deviceDashboard';
 import ProfilePage from './components/profile/profile';
 import AdminDashboard from './components/dashboard/admin';
+import ResetPasswordPage from './components/nav/passwordReset';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -48,6 +49,7 @@ function App() {
           {/*<Route path="/documentation" element={<DocumentationPage />} />*/}
           {/*<Route path="/settings" element={<Settings />} />*/}
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/issue-requests" element={<IssueRequestDashboard />} />
         </Routes>
       </Layout>

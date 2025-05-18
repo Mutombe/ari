@@ -11,7 +11,11 @@ import {
   IconButton,
 } from "@mui/material";
 import { AtSign, X, Lock, User, AlertCircle, Flag } from "lucide-react";
-import { login, register } from "../../redux/slices/authSlice";
+import {
+  login,
+  register,
+  requestPasswordReset,
+} from "../../redux/slices/authSlice";
 import { Logo } from "./nav";
 import CountrySelector from "./country";
 
@@ -106,6 +110,34 @@ export const AuthModals = ({ openType, onClose }) => {
     }
   };
 
+  const handleForgotPassword = () => {
+    if (!formData.email) {
+      setSnackbar({
+        open: true,
+        message: "Please enter your email",
+        severity: "error",
+      });
+      return;
+    }
+    dispatch(requestPasswordReset(formData.email))
+      .unwrap()
+      .then(() => {
+        setSnackbar({
+          open: true,
+          message: "Password reset instructions sent to your email",
+          severity: "success",
+        });
+        onClose();
+      })
+      .catch(() => {
+        setSnackbar({
+          open: true,
+          message: "Error sending reset instructions",
+          severity: "error",
+        });
+      });
+  };
+
   const getError = () => {
     if (!error) return null;
     if (typeof error === "object") {
@@ -167,6 +199,43 @@ export const AuthModals = ({ openType, onClose }) => {
     </>
   );
 
+  const renderForgotPasswordForm = () => (
+    <>
+      <TextField
+        fullWidth
+        label="Email"
+        type="email"
+        value={formData.email}
+        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+        InputProps={{
+          startAdornment: <AtSign className="text-gray-400 mr-2" size={18} />,
+        }}
+      />
+      <Divider className="!my-4" />
+
+      <Button
+        fullWidth
+        variant="contained"
+        onClick={handleForgotPassword}
+        disabled={status === "loading"}
+        className="!bg-emerald-600 hover:!bg-emerald-700"
+      >
+        {status === "loading" ? "Sending..." : "Send Reset Instructions"}
+      </Button>
+
+      <Divider className="!my-6">or</Divider>
+
+      <Button
+        fullWidth
+        variant="outlined"
+        onClick={() => setView("login")}
+        className="!border-emerald-600 !text-emerald-700"
+      >
+        Back to Login
+      </Button>
+    </>
+  );
+
   const renderLoginForm = () => (
     <>
       <TextField
@@ -190,6 +259,14 @@ export const AuthModals = ({ openType, onClose }) => {
           startAdornment: <Lock className="text-gray-400 mr-2" size={18} />,
         }}
       />
+      <div className="text-right mb-4">
+        <button
+          onClick={() => setView("forgot")}
+          className="text-sm text-emerald-600 hover:underline"
+        >
+          Forgot Password?
+        </button>
+      </div>
     </>
   );
 
@@ -246,7 +323,11 @@ export const AuthModals = ({ openType, onClose }) => {
           )}
 
           <div className="space-y-4">
-            {view === "register" ? renderRegistrationForm() : renderLoginForm()}
+            {view === "forgot"
+              ? renderForgotPasswordForm()
+              : view === "register"
+              ? renderRegistrationForm()
+              : renderLoginForm()}
           </div>
 
           {view === "register" && !selectedCountry ? (

@@ -1,5 +1,4 @@
 from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
@@ -7,6 +6,14 @@ from django.conf import settings
 from .models import Device, IssueRequest, Profile, CustomUser
 from django.db import transaction
 from django.contrib.auth.models import User  
+from django.core.mail import EmailMultiAlternatives
+from django.dispatch import receiver
+from django.template.loader import render_to_string
+from django.urls import reverse
+from django_rest_passwordreset.signals import reset_password_token_created
+from django.conf import settings 
+import logging
+logger = logging.getLogger(__name__)
 
 ADMIN_EMAILS = ['simbamtombe@gmail.com','kuda@africacarbontraining.com']
 
@@ -187,10 +194,48 @@ def handle_issue_request_status_change(sender, instance, **kwargs):
 @receiver(post_save, sender=CustomUser)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        # Create the profile directly instead of using transaction.on_commit
-        Profile.objects.create(user=instance)
+        # Defer Profile creation until the transaction is committed
+        transaction.on_commit(lambda: Profile.objects.create(user=instance))
 
 @receiver(post_save, sender=CustomUser)
 def save_user_profile(sender, instance, **kwargs):
     if hasattr(instance, 'profile'):
         instance.profile.save()
+
+@receiver(reset_password_token_created)
+def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
+    """
+    Custom handler for password reset tokens
+    """
+    # Build frontend URL instead of backend URL
+    frontend_url = f"{settings.FRONTEND_URL}/reset-password?token={reset_password_token.key}"
+    
+    context = {
+        'current_user': reset_password_token.user,
+        'username': reset_password_token.user.username,
+        'email': reset_password_token.user.email,
+        'reset_password_url': frontend_url,  
+        'support_email': settings.SUPPORT_EMAIL,
+        'site_name': settings.SITE_NAME,
+        'expiry_hours': settings.DJANGO_REST_PASSWORDRESET['TOKEN_EXPIRY'] // 3600
+    }
+
+    # Render email content
+    email_html_message = render_to_string('emails/user_reset_password.html', context)
+    email_plaintext_message = render_to_string('emails/user_reset_password.txt', context)
+
+    msg = EmailMultiAlternatives(
+        # Dynamic subject with site name
+        subject=f"Password Reset for {settings.SITE_NAME}",
+        body=email_plaintext_message,
+        from_email=settings.DEFAULT_FROM_EMAIL,  # Use configured email
+        to=[reset_password_token.user.email],
+        reply_to=[settings.SUPPORT_EMAIL]
+    )
+    msg.attach_alternative(email_html_message, "text/html")
+    
+    try:
+        msg.send()
+    except Exception as e:
+        # Log email sending errors
+        logger.error(f"Failed to send password reset email: {str(e)}")

@@ -82,6 +82,8 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "corsheaders",
     "django_celery_beat",
+    'rest_framework.authtoken',
+    'django_rest_passwordreset',
 ]
 
 MIDDLEWARE = [
@@ -223,6 +225,7 @@ DEFAULT_FROM_EMAIL = 'info@africarecsintl.org'
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 SERVER_EMAIL = 'simbamtombe@gmail.com' 
+SITE_NAME = "Africa Recs"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -263,6 +266,16 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
+}
+
+DJANGO_REST_PASSWORDRESET = {
+    'TOKEN_EXPIRY': 24 * 3600,  # 24 hours
+    'USE_TZ': True,
+    "PASSWORD_RESET_EMAIL_TEMPLATE": "user_reset_password.html",
+    "EMAIL_FROM": "simbamtombe@gmail.com",
+}
+DJANGO_REST_PASSWORDRESET = {
+
 }
 
 AUTH_PASSWORD_VALIDATORS = [

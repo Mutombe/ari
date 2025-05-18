@@ -20,5 +20,6 @@ urlpatterns = [
     path('api/profile/', ProfileView.as_view(), name='profile'),
     path("register/", RegisterView.as_view(), name="register"),
     path("login/", CustomTokenObtainPairView.as_view()),
+    path('password-reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
     path("refresh/", TokenRefreshView.as_view()),
 ]

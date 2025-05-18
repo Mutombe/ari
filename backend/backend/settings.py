@@ -137,6 +137,7 @@ CELERY_TIMEZONE = TIME_ZONE
 CELERY_ENABLE_UTC = USE_TZ   
 
 CELERY_APP = 'backend.celery_app:app'
+AUTH_USER_MODEL = 'core.CustomUser'
 
 # Performance Optimizations
 CELERY_WORKER_PREFETCH_MULTIPLIER = 4  # Balance between performance and fairness

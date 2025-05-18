@@ -49,7 +49,7 @@ const colors = {
 const Homepage = () => {
   const [authModalOpen, setAuthModalOpen] = useState(null);
   const { user, isAuthenticated } = useSelector((state) => state.auth);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return (
     <div className="bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 min-h-screen">
@@ -308,12 +308,21 @@ const Homepage = () => {
             Register your renewable energy devices today and start capitalizing
             on your contribution to a sustainable future.
           </p>
-          <Link
-            onClick={() => setAuthModalOpen("register")}
-            className={`px-8 py-4 rounded-lg ${colors.accent} ${colors.accentHover} text-white font-bold text-lg transition duration-300 transform hover:scale-105`}
-          >
-            Get Started Now
-          </Link>
+          {isAuthenticated ? (
+            <Link
+              to={'/about'}
+              className={`px-8 py-4 rounded-lg ${colors.accent} ${colors.accentHover} text-white font-bold text-lg transition duration-300 transform hover:scale-105`}
+            >
+              Lean More
+            </Link>
+          ) : (
+            <Link
+              onClick={() => setAuthModalOpen("register")}
+              className={`px-8 py-4 rounded-lg ${colors.accent} ${colors.accentHover} text-white font-bold text-lg transition duration-300 transform hover:scale-105`}
+            >
+              Get Started Now
+            </Link>
+          )}
         </div>
       </section>
 

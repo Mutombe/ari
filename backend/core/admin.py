@@ -1,6 +1,6 @@
 # account/admin.py
 from django.contrib import admin
-from .models import User, Profile, Device, IssueRequest, CustomUser
+from .models import User, Device, IssueRequest, CustomUser
 
 class AdminIssueRequestOverview(admin.ModelAdmin):
     list_display = (
@@ -11,13 +11,6 @@ class AdminIssueRequestOverview(admin.ModelAdmin):
     )
     search_fields = ("user",)
 
-class AdminProfileOverview(admin.ModelAdmin):
-    list_display = (
-        "id",
-        "profile_picture",
-        "user",
-    )
-    search_fields = ("user",)
 
 class AdminDeviceOverview(admin.ModelAdmin):
     list_display = (
@@ -29,6 +22,5 @@ class AdminDeviceOverview(admin.ModelAdmin):
     search_fields = ("username",)
 
 admin.site.register(IssueRequest, AdminIssueRequestOverview)
-admin.site.register(Profile, AdminProfileOverview)
 admin.site.register(Device, AdminDeviceOverview)
 admin.site.register(CustomUser)

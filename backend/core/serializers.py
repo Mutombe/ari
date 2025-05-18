@@ -3,30 +3,28 @@ from .models import Device, DeviceDocument, IssueRequest, Profile, CustomUser
 from django.contrib.auth.models import User  
 from django.core.exceptions import ValidationError
 from decimal import Decimal
-
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
     class Meta:
-        model = User
-        fields = ("id", "username", "email", "password", "is_active", "is_staff", "is_superuser")
+        model = CustomUser  # Changed from User to CustomUser
+        fields = ("id", "username", "email", "password", "is_active", "is_staff", "is_superuser", "country")
         extra_kwargs = {
             'country': {'required': False}
         }
 
     def validate_username(self, value):
-        if User.objects.filter(username=value).exists():
+        if CustomUser.objects.filter(username=value).exists():  # Changed from User to CustomUser
             raise serializers.ValidationError("Username already exists")
         return value
 
     def validate_email(self, value):
-        if User.objects.filter(email=value).exists():
+        if CustomUser.objects.filter(email=value).exists():  # Changed from User to CustomUser
             raise serializers.ValidationError("Email already exists")
         return value
 
     def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
-    
+        return CustomUser.objects.create_user(**validated_data)  # Changed from User to CustomUser
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 

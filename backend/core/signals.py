@@ -30,7 +30,7 @@ def send_admin_notification(subject, context, template_base):
     )
 
 # User registration signal
-@receiver(post_save, sender=User)
+@receiver(post_save, sender=CustomUser)
 def handle_new_user(sender, instance, created, **kwargs):
     if created:
         # Define attachment paths (modify these to your actual files)
@@ -187,8 +187,8 @@ def handle_issue_request_status_change(sender, instance, **kwargs):
 @receiver(post_save, sender=CustomUser)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        # Use transaction to ensure User is committed first
-        transaction.on_commit(lambda: Profile.objects.create(user=instance))
+        # Create the profile directly instead of using transaction.on_commit
+        Profile.objects.create(user=instance)
 
 @receiver(post_save, sender=CustomUser)
 def save_user_profile(sender, instance, **kwargs):

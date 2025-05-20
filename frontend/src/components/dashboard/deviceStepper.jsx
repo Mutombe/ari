@@ -5,6 +5,7 @@ import { useSnackbar } from "notistack";
 import { useTheme } from "@mui/material/styles";
 import { motion, AnimatePresence } from "framer-motion";
 import { Description } from "@mui/icons-material";
+import { createDevice } from "../../redux/slices/deviceSlice";
 import {
   CloudUpload,
   X,
@@ -40,10 +41,12 @@ import {
   CircularProgress,
   Grid,
   Divider,
-  Snackbar,
   Alert,
   useMediaQuery,
   styled,
+  Snackbar,
+  FormHelperText,
+  Typography,
 } from "@mui/material";
 
 const countries = [
@@ -104,7 +107,10 @@ const EcoButton = ({ children, onClick, variant = "primary", ...props }) => (
 );
 
 const EDocumentUpload = ({
+  id,
   label,
+  shortLabel,
+  description,
   accept = ".pdf,.doc,.docx,image/*",
   onUpload,
   file,
@@ -112,38 +118,21 @@ const EDocumentUpload = ({
   required = false,
   error = null,
 }) => {
-  // Use internal state if no external state is provided
-  const [internalFile, setInternalFile] = useState(null);
-
-  const currentFile = file || internalFile;
-
-  const handleUpload = (uploadedFile) => {
-    if (onUpload) {
-      onUpload(uploadedFile);
-    } else {
-      setInternalFile(uploadedFile);
-    }
-  };
-
-  const handleRemove = () => {
-    if (onRemove) {
-      onRemove();
-    } else {
-      setInternalFile(null);
-    }
-  };
-
   return (
     <motion.div
       whileHover={{ y: -2 }}
       className={`border-2 border-dashed ${
-        error ? "border-red-200 bg-red-50" : "border-emerald-100"
+        error
+          ? "border-red-200 bg-red-50"
+          : file
+          ? "border-emerald-200 bg-emerald-50"
+          : "border-emerald-100"
       } rounded-xl p-4 mb-4 transition-colors`}
     >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-start space-x-3">
           <UploadCloud
-            className={`${error ? "text-red-500" : "text-emerald-600"}`}
+            className={`${error ? "text-red-500" : "text-emerald-600"} mt-1`}
           />
           <div>
             <p
@@ -153,35 +142,44 @@ const EDocumentUpload = ({
             >
               {label} {required && <span className="text-red-500">*</span>}
             </p>
-            <p className="text-sm text-gray-500">
-              {accept.replaceAll(".", " • ")}
+            <p className="text-sm text-gray-500 mb-1">{description}</p>
+            <p className="text-xs text-gray-400">
+              Accepted formats: {accept.replaceAll(".", " ")}
             </p>
           </div>
         </div>
-        {currentFile ? (
-          <div className="flex items-center space-x-2">
-            <CheckCircle className="text-emerald-600" size={16} />
-            <p className="text-gray-600 text-sm">{currentFile.name}</p>
-            <button
-              onClick={handleRemove}
-              className="text-gray-400 hover:text-red-500"
-            >
-              <X size={16} />
-            </button>
-          </div>
-        ) : (
-          <label className="cursor-pointer px-3 py-1 bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 rounded-md text-sm transition-colors">
-            Browse
+
+        <div className="flex items-center space-x-2 ml-auto">
+          {file && (
+            <div className="flex items-center space-x-2 max-w-xs">
+              <FileText className="text-emerald-600 flex-shrink-0" size={16} />
+              <p className="text-gray-600 text-sm truncate">{file.name}</p>
+              <button
+                onClick={onRemove}
+                className="text-gray-400 hover:text-red-500 flex-shrink-0"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          )}
+
+          <label
+            className={`cursor-pointer px-3 py-1.5 ${
+              file
+                ? "bg-white text-gray-700 border border-gray-300"
+                : "bg-emerald-600 text-white border border-emerald-600"
+            } hover:bg-opacity-90 rounded-md text-sm transition-colors flex-shrink-0`}
+          >
+            {file ? "Replace" : "Upload"}
             <input
+              id={id}
               type="file"
               className="hidden"
               accept={accept}
-              onChange={(e) =>
-                e.target.files[0] && handleUpload(e.target.files[0])
-              }
+              onChange={(e) => e.target.files[0] && onUpload(e.target.files[0])}
             />
           </label>
-        )}
+        </div>
       </div>
       {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
     </motion.div>
@@ -261,6 +259,11 @@ const DeviceUploadStepper = ({ open, onClose }) => {
   const [docFile, setDocFile] = useState(null);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "info",
+  });
   const [technologyOptions, setTechnologyOptions] = useState([]);
 
   const initialFormState = {
@@ -350,7 +353,6 @@ const DeviceUploadStepper = ({ open, onClose }) => {
       description: "Photos of installation",
     },
   ];
-
   const fuelTechnologyMap = {
     Solar: ["TC110", "TC120", "TC130", "TC140"],
     Wind: ["TC210", "TC220"],
@@ -579,6 +581,56 @@ const DeviceUploadStepper = ({ open, onClose }) => {
       }
     });
 
+    const getStepFields = (stepIndex) => {
+      switch (stepIndex) {
+        case 0:
+          return ["device_name", "issuer_organisation", "default_account_code"];
+        case 1:
+          return [
+            "fuel_type",
+            "technology_type",
+            "capacity",
+            "commissioning_date",
+            "effective_date",
+          ];
+        case 2:
+          return ["address", "country", "latitude", "longitude", "postcode"];
+        case 3:
+          return [
+            "meter_ids",
+            "network_owner",
+            "connection_voltage",
+            "grid_connection_details",
+            "volume_evidence_type",
+            "volume_evidence_other",
+
+            ...(formData.volume_evidence_type === "Other"
+              ? ["volume_evidence_other"]
+              : []),
+          ];
+        case 4: // Business Details
+          return [
+            "onsite_consumer",
+            "auxiliary_energy",
+            ...(formData.onsite_consumer === "Yes"
+              ? ["onsite_consumer_details"]
+              : []),
+            ...(formData.auxiliary_energy === "Yes"
+              ? ["auxiliary_energy_details"]
+              : []),
+            "electricity_import_details",
+            "carbon_offset_registration",
+            "labelling_scheme",
+            "public_funding",
+            ...(formData.public_funding !== "No" ? ["funding_end_date"] : []),
+          ];
+        case 5:
+          return ["documents", "additional_notes"];
+        default:
+          return [];
+      }
+    };
+
     // Special validations
     if (formData.latitude && !validateLatitude(formData.latitude)) {
       newErrors.latitude = "Must be between -90 and 90";
@@ -723,7 +775,6 @@ const DeviceUploadStepper = ({ open, onClose }) => {
         parseFloat(formData.longitude).toFixed(6)
       );
 
-      // Append files
       const fileFields = {
         sf02: "production_facility_registration",
         sf02c: "declaration_of_ownership",
@@ -732,14 +783,25 @@ const DeviceUploadStepper = ({ open, onClose }) => {
         photos: "project_photos",
       };
 
-      Object.entries(fileFields).forEach(([frontendKey, backendKey]) => {
-        if (formData.documents[frontendKey]) {
-          formDataToSend.append(backendKey, formData.documents[frontendKey]);
+      Object.entries(formData.documents).forEach(([docType, file]) => {
+        if (file && fileFields[docType]) {
+          formDataToSend.append(fileFields[docType], file);
         }
       });
 
       // Create device
-      const response = await deviceAPI.create(formDataToSend);
+      dispatch(createDevice(formDataToSend))
+        .unwrap()
+        .then(() => {
+          setSnackbar({
+            open: true,
+            message: "Device Upload Successful.",
+            severity: "success",
+          });
+        })
+        .catch((error) => {
+          // Handle error
+        });
 
       // Submit device
       await deviceAPI.submit(response.data.id);
@@ -823,6 +885,17 @@ const DeviceUploadStepper = ({ open, onClose }) => {
 
   const isStepValid = useStepValidation(activeStep, formData, steps);
 
+  const handleFileRemove = (docId) => {
+    setFormData((prev) => {
+      const newDocs = { ...prev.documents };
+      delete newDocs[docId];
+      return {
+        ...prev,
+        documents: newDocs,
+      };
+    });
+  };
+
   const handleNext = () => {
     if (validateStep(activeStep)) {
       setActiveStep((prev) => Math.min(prev + 1, steps.length - 1));
@@ -831,48 +904,6 @@ const DeviceUploadStepper = ({ open, onClose }) => {
 
   const handleBack = () => {
     setActiveStep((prev) => Math.max(prev - 1, 0));
-  };
-
-  const handleSubmit2 = async () => {
-    const allErrors = {};
-    steps.forEach((step, index) => {
-      step.fields.forEach((field) => {
-        const error = validateField(field, formData[field]);
-        if (error) allErrors[field] = error;
-      });
-    });
-
-    if (Object.keys(allErrors).length > 0) {
-      setErrors(allErrors);
-      enqueueSnackbar("Please fix all errors before submitting", {
-        variant: "error",
-      });
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const formPayload = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        if (value instanceof File) {
-          formPayload.append(key, value);
-        } else {
-          formPayload.append(key, value);
-        }
-      });
-
-      const response = await deviceAPI.create(formPayload);
-      enqueueSnackbar("Device registered successfully!", {
-        variant: "success",
-      });
-      onClose();
-    } catch (error) {
-      enqueueSnackbar(error.response?.data?.message || "Submission failed", {
-        variant: "error",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   const validateLatitude = (value) => {
@@ -1235,16 +1266,46 @@ const DeviceUploadStepper = ({ open, onClose }) => {
               color={steps[4].color}
             >
               <div className="space-y-4">
-                <EDocumentUpload
-                  label="Technical Specifications Document"
-                  required
-                  file={docFile}
-                  onUpload={setDocFile}
-                  onRemove={() => setDocFile(null)}
-                />
+                {errors.documents && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg mb-4">
+                    <p className="text-red-600 text-sm">{errors.documents}</p>
+                  </div>
+                )}
 
-                <EDocumentUpload label="Location Maps" />
-                <EDocumentUpload label="Certifications" accept=".pdf" />
+                {DOCUMENT_TYPES.map((doc) => (
+                  <EDocumentUpload
+                    key={doc.id}
+                    id={doc.id}
+                    label={isMobile ? doc.shortLabel : doc.label}
+                    shortLabel={doc.shortLabel}
+                    description={doc.description}
+                    accept={doc.accept}
+                    required={doc.required}
+                    file={formData.documents[doc.id]}
+                    onUpload={(file) => handleFileUpload(doc.id, file)}
+                    onRemove={() => handleFileRemove(doc.id)}
+                    error={
+                      errors.documents &&
+                      errors.documents.includes(doc.shortLabel)
+                        ? `Please upload ${doc.shortLabel} document`
+                        : null
+                    }
+                  />
+                ))}
+
+                <div className="mt-6">
+                  <TextField
+                    fullWidth
+                    label="Additional Notes"
+                    name="additional_notes"
+                    value={formData.additional_notes}
+                    onChange={handleInputChange}
+                    multiline
+                    rows={isMobile ? 3 : 4}
+                    size={isMobile ? "small" : "medium"}
+                    placeholder="Add any relevant information about the device or documentation"
+                  />
+                </div>
               </div>
             </StepCard>
           </>
@@ -1256,99 +1317,116 @@ const DeviceUploadStepper = ({ open, onClose }) => {
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      fullWidth
-      maxWidth="lg"
-      fullScreen={isMobile}
-      PaperComponent={motion.div}
-      PaperProps={dialogAnimation}
-    >
-      <div className="h-screen flex flex-col bg-gradient-to-b from-emerald-100 to-white rounded-sm">
-        <div className="p-6 border-b border-emerald-100">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-3">
-              <Zap className="text-emerald-600 h-8 w-8" />
-              <h1 className="text-2xl font-bold text-gray-900 ">
-                New Renewable Asset Registration
-              </h1>
+    <>
+      <Dialog
+        open={open}
+        onClose={onClose}
+        fullWidth
+        maxWidth="lg"
+        fullScreen={isMobile}
+        PaperComponent={motion.div}
+        PaperProps={dialogAnimation}
+      >
+        <div className="h-screen flex flex-col bg-gradient-to-b from-emerald-100 to-white rounded-sm">
+          <div className="p-6 border-b border-emerald-100">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-3">
+                <Zap className="text-emerald-600 h-8 w-8" />
+                <h1 className="text-2xl font-bold text-gray-900 ">
+                  New Renewable Asset Registration
+                </h1>
+              </div>
+              <IconButton
+                onClick={onClose}
+                className="text-gray-500 hover:bg-emerald-50"
+              >
+                <X />
+              </IconButton>
             </div>
-            <IconButton
-              onClick={onClose}
-              className="text-gray-500 hover:bg-emerald-50"
-            >
-              <X />
-            </IconButton>
-          </div>
 
-          <div className="hidden md:flex space-x-2">
-            {steps.map((step, index) => (
-              <StepIndicator
-                key={index}
-                index={index}
-                active={activeStep === index}
-                step={step}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div className="flex-1 overflow-y-auto p-6">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeStep}
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -50 }}
-              transition={{ duration: 0.2 }}
-            >
-              {renderStepContent(activeStep)}
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        <div className="p-4 border-t border-emerald-100 bg-white">
-          <div className="flex justify-between items-center">
-            <EcoButton
-              variant="secondary"
-              onClick={activeStep > 0 ? handleBack : onClose}
-              disabled={isSubmitting}
-            >
-              <ArrowLeft className="mr-2" />
-              {activeStep === 0 ? "Cancel" : "Back"}
-            </EcoButton>
-
-            <div className="flex items-center space-x-3">
-              {activeStep < steps.length - 1 ? (
-                <EcoButton
-                  onClick={handleNext}
-                  endIcon={<ArrowRight />}
-                  disabled={!isStepValid}
-                >
-                  Continue
-                </EcoButton>
-              ) : (
-                <EcoButton
-                  onClick={handleSubmit}
-                  disabled={isSubmitting}
-                  className="bg-amber-500 hover:bg-amber-600 rounded-sm p-2"
-                >
-                  {isSubmitting ? (
-                    <CircularProgress size={24} className="text-white" />
-                  ) : (
-                    <>
-                      Submit Asset
-                      <FileCheck className="ml-2" />
-                    </>
-                  )}
-                </EcoButton>
-              )}
+            <div className="hidden md:flex space-x-2">
+              {steps.map((step, index) => (
+                <StepIndicator
+                  key={index}
+                  index={index}
+                  active={activeStep === index}
+                  step={step}
+                />
+              ))}
             </div>
           </div>
+
+          <div className="flex-1 overflow-y-auto p-6">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeStep}
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.2 }}
+              >
+                {renderStepContent(activeStep)}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          <div className="p-4 border-t border-emerald-100 bg-white">
+            <div className="flex justify-between items-center">
+              <EcoButton
+                variant="secondary"
+                onClick={activeStep > 0 ? handleBack : onClose}
+                disabled={isSubmitting}
+              >
+                <ArrowLeft className="mr-2" />
+                {activeStep === 0 ? "Cancel" : "Back"}
+              </EcoButton>
+
+              <div className="flex items-center space-x-3">
+                {activeStep < steps.length - 1 ? (
+                  <EcoButton
+                    onClick={handleNext}
+                    endIcon={<ArrowRight />}
+                    disabled={!isStepValid}
+                  >
+                    Continue
+                  </EcoButton>
+                ) : (
+                  <EcoButton
+                    onClick={handleSubmit}
+                    disabled={isSubmitting}
+                    className="bg-amber-500 hover:bg-amber-600 rounded-sm p-2"
+                  >
+                    {isSubmitting ? (
+                      <CircularProgress size={24} className="text-white" />
+                    ) : (
+                      <>
+                        Submit Asset
+                        <FileCheck className="ml-2" />
+                      </>
+                    )}
+                  </EcoButton>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </Dialog>
+      </Dialog>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+      >
+        <Alert
+          severity={snackbar.severity}
+          className="!items-center"
+          iconMapping={{
+            error: <AlertCircle className="w-5 h-5" />,
+          }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </>
   );
 };
 

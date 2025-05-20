@@ -875,6 +875,18 @@ const DeviceUploadStepper = ({ open, onClose }) => {
     }
   };
 
+  const validateLatitude = (value) => {
+    if (value === "") return true;
+    const num = parseFloat(value);
+    return !isNaN(num) && num >= -90 && num <= 90;
+  };
+
+  const validateLongitude = (value) => {
+    if (value === "") return true;
+    const num = parseFloat(value);
+    return !isNaN(num) && num >= -180 && num <= 180;
+  };
+
   const handleFileUpload = (field, file) => {
     if (file?.size > 10 * 1024 * 1024) {
       enqueueSnackbar("File size exceeds 10MB limit", { variant: "error" });
@@ -1046,24 +1058,31 @@ const DeviceUploadStepper = ({ open, onClose }) => {
                 }}
               />
               <TextField
+                fullWidth
                 label="Commissioning Date"
+                name="commissioning_date"
                 type="date"
-                name="commissioningDate"
+                InputLabelProps={{ shrink: true }}
                 value={formData.commissioning_date}
                 onChange={handleInputChange}
+                required
+                size={isMobile ? "small" : "medium"}
                 error={!!errors.commissioning_date}
                 helperText={errors.commissioning_date}
-                InputLabelProps={{ shrink: true }}
               />
+
               <TextField
+                fullWidth
                 label="Effective Date"
+                name="effective_date"
                 type="date"
-                name="commissioningDate"
-                value={formData.commissioning_date}
-                onChange={handleInputChange}
-                error={!!errors.commissioning_date}
-                helperText={errors.commissioning_date}
                 InputLabelProps={{ shrink: true }}
+                value={formData.effective_date}
+                onChange={handleInputChange}
+                required
+                size={isMobile ? "small" : "medium"}
+                error={!!errors.effective_date}
+                helperText={errors.effective_date}
               />
             </div>
           </StepCard>
@@ -1123,16 +1142,16 @@ const DeviceUploadStepper = ({ open, onClose }) => {
           >
             <div className="grid gap-4">
               <TextField
-                label="Meter IDs"
-                name="meterIds"
-                multiline
-                rows={2}
+                fullWidth
+                label="Meter/Measurement IDs"
+                name="meter_ids"
                 value={formData.meter_ids}
                 onChange={handleInputChange}
+                required
+                multiline
+                rows={2}
+                helperText="Comma-separated list of meter IDs"
                 error={!!errors.meter_ids}
-                helperText={
-                  errors.meter_ds || "Comma-separated list of meter IDs"
-                }
               />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

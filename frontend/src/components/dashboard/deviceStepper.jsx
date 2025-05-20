@@ -496,6 +496,321 @@ const DeviceUploadStepper = ({ open, onClose }) => {
     return Object.keys(stepErrors).length === 0;
   };
 
+  const handleSubmit2 = async () => {
+    // Validate all fields first
+    let newErrors = {};
+    let hasErrors = false;
+
+    if (activeStep === 3) {
+      if (!formData.meter_ids) {
+        newErrors.meter_ids = "Meter IDs are required";
+        hasErrors = true;
+      }
+      if (!formData.volume_evidence_type) {
+        newErrors.volume_evidence_type = "Evidence type is required";
+        hasErrors = true;
+      }
+      if (
+        formData.volume_evidence_type === "Other" &&
+        !formData.volume_evidence_other
+      ) {
+        newErrors.volume_evidence_other = "Please specify evidence type";
+        hasErrors = true;
+      }
+    }
+
+    if (activeStep === 4) {
+      if (!formData.onsite_consumer) {
+        newErrors.onsite_consumer = "On-site consumer selection required";
+        hasErrors = true;
+      }
+      if (
+        formData.onsite_consumer === "Yes" &&
+        !formData.onsite_consumer_details
+      ) {
+        newErrors.onsite_consumer_details = "Consumer details required";
+        hasErrors = true;
+      }
+      if (!formData.auxiliary_energy) {
+        newErrors.auxiliary_energy = "Auxiliary energy selection required";
+        hasErrors = true;
+      }
+      if (
+        formData.auxiliary_energy === "Yes" &&
+        !formData.auxiliary_energy_details
+      ) {
+        newErrors.auxiliary_energy_details = "Auxiliary details required";
+        hasErrors = true;
+      }
+    }
+
+    if (activeStep === 5) {
+      if (!formData.public_funding) {
+        newErrors.public_funding = "Public funding selection required";
+        hasErrors = true;
+      }
+      if (formData.public_funding !== "None" && !formData.funding_end_date) {
+        newErrors.funding_end_date = "Funding end date required";
+        hasErrors = true;
+      }
+    }
+
+    // Basic required field validation
+    const requiredFields = [
+      "device_name",
+      "issuer_organisation",
+      "fuel_type",
+      "technology_type",
+      "capacity",
+      "commissioning_date",
+      "effective_date",
+      "address",
+      "country",
+      "latitude",
+      "longitude",
+      "postcode",
+      "number_of_generating_units",
+      "meter_ids",
+    ];
+
+    requiredFields.forEach((field) => {
+      if (!formData[field]) {
+        newErrors[field] = "This field is required";
+        hasErrors = true;
+      }
+    });
+
+    // Special validations
+    if (formData.latitude && !validateLatitude(formData.latitude)) {
+      newErrors.latitude = "Must be between -90 and 90";
+      hasErrors = true;
+    }
+
+    if (formData.longitude && !validateLongitude(formData.longitude)) {
+      newErrors.longitude = "Must be between -180 and 180";
+      hasErrors = true;
+    }
+
+    // Conditional validations
+    if (formData.public_funding !== "None" && !formData.funding_end_date) {
+      newErrors.funding_end_date = "Required when public funding is specified";
+      hasErrors = true;
+    }
+
+    if (
+      formData.onsite_consumer === "Yes" &&
+      !formData.onsite_consumer_details
+    ) {
+      newErrors.onsite_consumer_details =
+        "Required when on-site consumer is present";
+      hasErrors = true;
+    }
+
+    if (
+      formData.auxiliary_energy === "Yes" &&
+      !formData.auxiliary_energy_details
+    ) {
+      newErrors.auxiliary_energy_details =
+        "Required when auxiliary energy is present";
+      hasErrors = true;
+    }
+
+    if (
+      formData.volume_evidence_type === "Other" &&
+      !formData.volume_evidence_other
+    ) {
+      newErrors.volume_evidence_other = "Please specify other evidence type";
+      hasErrors = true;
+    }
+
+    // Document validation
+    const requiredDocuments = DOCUMENT_TYPES.filter((doc) => doc.required).map(
+      (doc) => doc.id
+    );
+    const missingDocuments = requiredDocuments.filter(
+      (doc) => !formData.documents[doc]
+    );
+
+    if (missingDocuments.length > 0) {
+      const missingLabels = missingDocuments.map(
+        (doc) => DOCUMENT_TYPES.find((d) => d.id === doc).shortLabel
+      );
+
+      newErrors.documents = `Missing: ${missingLabels.join(", ")}`;
+      hasErrors = true;
+
+      enqueueSnackbar(
+        `Missing required documents: ${missingLabels.join(", ")}`,
+        { variant: "error" }
+      );
+
+      setErrors((prev) => ({
+        ...prev,
+        ...newErrors,
+      }));
+
+      setActiveStep(3); // Jump to documents step
+      return;
+    }
+
+    if (hasErrors) {
+      setErrors((prev) => ({
+        ...prev,
+        ...newErrors,
+      }));
+
+      // Find the first step with errors
+      for (let i = 0; i < steps.length; i++) {
+        const stepFields = getStepFields(i);
+        const hasStepError = stepFields.some((field) => newErrors[field]);
+        if (hasStepError) {
+          setActiveStep(i);
+          enqueueSnackbar("Please correct the errors before submitting", {
+            variant: "error",
+          });
+          return;
+        }
+      }
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const formDataToSend = new FormData();
+
+      // Append regular fields
+      const fields = [
+        "device_name",
+        "issuer_organisation",
+        "default_account_code",
+        "fuel_type",
+        "technology_type",
+        "capacity",
+        "commissioning_date",
+        "effective_date",
+        "address",
+        "country",
+        "postcode",
+        "additional_notes",
+        "number_of_generating_units",
+        "meter_ids",
+        "network_owner",
+        "connection_voltage",
+        "grid_connection_details",
+        "volume_evidence_type",
+        "volume_evidence_other",
+        "carbon_offset_registration",
+        "labelling_scheme",
+        "public_funding",
+        "onsite_consumer",
+        "onsite_consumer_details",
+        "auxiliary_energy",
+        "auxiliary_energy_details",
+        "electricity_import_details",
+      ];
+
+      fields.forEach((field) => {
+        formDataToSend.append(field, formData[field]);
+      });
+
+      // Append numbers with proper formatting
+      formDataToSend.append(
+        "latitude",
+        parseFloat(formData.latitude).toFixed(6)
+      );
+      formDataToSend.append(
+        "longitude",
+        parseFloat(formData.longitude).toFixed(6)
+      );
+
+      // Append files
+      const fileFields = {
+        sf02: "production_facility_registration",
+        sf02c: "declaration_of_ownership",
+        metering: "metering_evidence",
+        diagram: "single_line_diagram",
+        photos: "project_photos",
+      };
+
+      Object.entries(fileFields).forEach(([frontendKey, backendKey]) => {
+        if (formData.documents[frontendKey]) {
+          formDataToSend.append(backendKey, formData.documents[frontendKey]);
+        }
+      });
+
+      // Create device
+      const response = await deviceAPI.create(formDataToSend);
+
+      // Submit device
+      await deviceAPI.submit(response.data.id);
+
+      // Handle success
+      setSnackbar({
+        open: true,
+        message: "Device Upload Successful.",
+        severity: "success",
+      });
+      onClose();
+    } catch (error) {
+      console.error("Submission error:", error);
+
+      // Handle validation errors
+      if (error.response?.data) {
+        // Handle field-specific errors
+        const apiErrors = error.response.data;
+        const fieldErrors = {};
+
+        // Map API errors to form fields
+        Object.keys(apiErrors).forEach((key) => {
+          fieldErrors[key] = apiErrors[key].join(", ");
+        });
+
+        // Update form errors state
+        setErrors((prev) => ({
+          ...prev,
+          ...fieldErrors,
+        }));
+
+        // Show first error in snackbar
+        const firstError = Object.values(apiErrors)[0]?.[0];
+        if (firstError) {
+          enqueueSnackbar(firstError, { variant: "error" });
+        }
+
+        // Jump to first error step
+        const errorStep = steps.findIndex((step) =>
+          Object.keys(apiErrors).some((field) =>
+            getStepFields(step.id).includes(field)
+          )
+        );
+        if (errorStep >= 0) setActiveStep(errorStep);
+      } else {
+        enqueueSnackbar("Submission failed. Please try again.", {
+          variant: "error",
+        });
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  useEffect(() => {
+    if (formData.fuel_type) {
+      deviceAPI
+        .getTechnologyOptions(formData.fuel_type)
+        .then((response) => {
+          setTechnologyOptions(response.data.options);
+        })
+        .catch((error) => {
+          console.error("Error fetching technology options:", error);
+          enqueueSnackbar("Failed to fetch technology options", {
+            variant: "error",
+          });
+        });
+    }
+  }, [formData.fuel_type, enqueueSnackbar]);
+
   const useStepValidation = (activeStep, formData, steps) => {
     return React.useMemo(() => {
       const stepErrors = {};
@@ -661,25 +976,7 @@ const DeviceUploadStepper = ({ open, onClose }) => {
             color={steps[1].color}
           >
             <div className="grid gap-4">
-              <FormControl fullWidth error={!!errors.technologyType}>
-                <InputLabel>Technology Type</InputLabel>
-                <Select
-                  name="technologyType"
-                  value={formData.technology_type}
-                  onChange={handleInputChange}
-                >
-                  <MenuItem value="Solar">Solar PV</MenuItem>
-                  <MenuItem value="Wind">Wind Turbine</MenuItem>
-                  <MenuItem value="Hydro">Hydroelectric</MenuItem>
-                </Select>
-                {errors.technology_type && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.technology_type}
-                  </p>
-                )}
-              </FormControl>
-
-              <FormControl fullWidth error={!!errors.fuel_type}>
+            <FormControl fullWidth error={!!errors.fuel_type}>
                 <InputLabel>Fuel Type</InputLabel>
                 <Select
                   value={formData.fuel_type}
@@ -696,36 +993,36 @@ const DeviceUploadStepper = ({ open, onClose }) => {
                   <FormHelperText>{errors.fuel_type}</FormHelperText>
                 )}
               </FormControl>
-
               <FormControl
-                fullWidth
-                disabled={!formData.fuel_type}
-                size={isMobile ? "small" : "medium"}
-                error={!!errors.technology_type}
-              >
-                <InputLabel>Technology Type</InputLabel>
-                <Select
-                  name="technology_type"
-                  value={formData.technology_type}
-                  onChange={handleInputChange}
-                  required
-                >
-                  {technologyOptions.map((tech) => (
-                    <MenuItem key={tech.value} value={tech.value}>
-                      {tech.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-                {errors.technology_type && (
-                  <Typography
-                    variant="caption"
-                    color="error"
-                    sx={{ mt: 0.5, ml: 1.5 }}
-                  >
-                    {errors.technology_type}
-                  </Typography>
-                )}
-              </FormControl>
+                      fullWidth
+                      disabled={!formData.fuel_type}
+                      size={isMobile ? "small" : "medium"}
+                      error={!!errors.technology_type}
+                    >
+                      <InputLabel>Technology Type</InputLabel>
+                      <Select
+                        name="technology_type"
+                        value={formData.technology_type}
+                        onChange={handleInputChange}
+                        required
+                      >
+                        {technologyOptions.map((tech) => (
+                          <MenuItem key={tech.value} value={tech.value}>
+                            {tech.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      {errors.technology_type && (
+                        <Typography
+                          variant="caption"
+                          color="error"
+                          sx={{ mt: 0.5, ml: 1.5 }}
+                        >
+                          {errors.technology_type}
+                        </Typography>
+                      )}
+                    </FormControl>
+
               <TextField
                 label="Capacity (MW)"
                 name="capacity"

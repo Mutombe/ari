@@ -430,7 +430,6 @@ const DeviceUploadStepper = ({ open, onClose }) => {
     ["No", "No"],
   ];
 
-
   const StepIndicator = React.memo(({ index, active, step }) => (
     <motion.div
       className={`flex items-center px-4 py-2 rounded-full cursor-pointer ${
@@ -496,7 +495,7 @@ const DeviceUploadStepper = ({ open, onClose }) => {
     return Object.keys(stepErrors).length === 0;
   };
 
-  const handleSubmit2 = async () => {
+  const handleSubmit = async () => {
     // Validate all fields first
     let newErrors = {};
     let hasErrors = false;
@@ -834,7 +833,7 @@ const DeviceUploadStepper = ({ open, onClose }) => {
     setActiveStep((prev) => Math.max(prev - 1, 0));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit2 = async () => {
     const allErrors = {};
     steps.forEach((step, index) => {
       step.fields.forEach((field) => {
@@ -916,19 +915,16 @@ const DeviceUploadStepper = ({ open, onClose }) => {
           >
             <div className="grid gap-4">
               <TextField
+                fullWidth
                 label="Device Name"
-                name="deviceName"
+                name="device_name"
                 value={formData.device_name}
                 onChange={handleInputChange}
+                required
+                size={isMobile ? "small" : "medium"}
                 error={!!errors.device_name}
                 helperText={errors.device_name}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Sun className="text-gray-400" />
-                    </InputAdornment>
-                  ),
-                }}
+                sx={{ mb: 1 }}
               />
               <Grid item xs={12} md={6}>
                 <FormControl fullWidth error={!!errors.country}>
@@ -976,52 +972,64 @@ const DeviceUploadStepper = ({ open, onClose }) => {
             color={steps[1].color}
           >
             <div className="grid gap-4">
-            <FormControl fullWidth error={!!errors.fuel_type}>
+              <FormControl
+                fullWidth
+                size={isMobile ? "small" : "medium"}
+                error={!!errors.fuel_type}
+              >
                 <InputLabel>Fuel Type</InputLabel>
                 <Select
+                  name="fuel_type"
                   value={formData.fuel_type}
-                  onChange={handleChange("fuelType")}
-                  label="Fuel Type"
+                  onChange={handleInputChange}
+                  required
+                  MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
                 >
-                  {Object.keys(fuelTechnologyMap).map((type) => (
-                    <MenuItem key={type} value={type}>
-                      {type}
+                  {Object.keys(fuelTechnologyMap).map((fuel) => (
+                    <MenuItem key={fuel} value={fuel}>
+                      {fuel}
                     </MenuItem>
                   ))}
                 </Select>
                 {errors.fuel_type && (
-                  <FormHelperText>{errors.fuel_type}</FormHelperText>
+                  <Typography
+                    variant="caption"
+                    color="error"
+                    sx={{ mt: 0.5, ml: 1.5 }}
+                  >
+                    {errors.fuel_type}
+                  </Typography>
                 )}
               </FormControl>
               <FormControl
-                      fullWidth
-                      disabled={!formData.fuel_type}
-                      size={isMobile ? "small" : "medium"}
-                      error={!!errors.technology_type}
-                    >
-                      <InputLabel>Technology Type</InputLabel>
-                      <Select
-                        name="technology_type"
-                        value={formData.technology_type}
-                        onChange={handleInputChange}
-                        required
-                      >
-                        {technologyOptions.map((tech) => (
-                          <MenuItem key={tech.value} value={tech.value}>
-                            {tech.label}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      {errors.technology_type && (
-                        <Typography
-                          variant="caption"
-                          color="error"
-                          sx={{ mt: 0.5, ml: 1.5 }}
-                        >
-                          {errors.technology_type}
-                        </Typography>
-                      )}
-                    </FormControl>
+                fullWidth
+                disabled={!formData.fuel_type}
+                size={isMobile ? "small" : "medium"}
+                error={!!errors.technology_type}
+              >
+                <InputLabel>Technology Type</InputLabel>
+                <Select
+                  name="technology_type"
+                  value={formData.technology_type}
+                  onChange={handleInputChange}
+                  required
+                >
+                  {technologyOptions.map((tech) => (
+                    <MenuItem key={tech.value} value={tech.value}>
+                      {tech.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {errors.technology_type && (
+                  <Typography
+                    variant="caption"
+                    color="error"
+                    sx={{ mt: 0.5, ml: 1.5 }}
+                  >
+                    {errors.technology_type}
+                  </Typography>
+                )}
+              </FormControl>
 
               <TextField
                 label="Capacity (MW)"

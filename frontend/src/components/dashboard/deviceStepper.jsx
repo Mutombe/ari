@@ -270,6 +270,7 @@ const DeviceUploadStepper = ({ open, onClose }) => {
     device_name: "",
     issuer_organisation: "",
     default_account_code: user?.id || "",
+    country: "",
 
     fuel_type: "",
     technology_type: "",
@@ -367,7 +368,7 @@ const DeviceUploadStepper = ({ open, onClose }) => {
       title: "Basic Info",
       icon: <Leaf size={24} />,
       color: "emerald",
-      fields: ["device_name", "issuer_organisation"],
+      fields: ["device_name", "issuer_organisation", "country"],
     },
     {
       id: 1,
@@ -800,11 +801,16 @@ const DeviceUploadStepper = ({ open, onClose }) => {
           });
         })
         .catch((error) => {
-          // Handle error
+          console.error("Submission error:", error);
+          enqueueSnackbar(error.message || "Submission failed", {
+            variant: "error",
+          });
         });
 
+      setIsSubmitting(false);
+
       // Submit device
-      await deviceAPI.submit(response.data.id);
+      //await deviceAPI.submit(response.data.id);
 
       // Handle success
       setSnackbar({
@@ -918,13 +924,19 @@ const DeviceUploadStepper = ({ open, onClose }) => {
     return !isNaN(num) && num >= -180 && num <= 180;
   };
 
-  const handleFileUpload = (field, file) => {
+  const handleFileUpload = (docId, file) => {
     if (file?.size > 10 * 1024 * 1024) {
       enqueueSnackbar("File size exceeds 10MB limit", { variant: "error" });
       return;
     }
-    setFormData((prev) => ({ ...prev, [field]: file }));
-    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
+    setFormData((prev) => ({
+      ...prev,
+      documents: {
+        ...prev.documents,
+        [docId]: file,
+      },
+    }));
+    if (errors[docId]) setErrors((prev) => ({ ...prev, [docId]: "" }));
   };
 
   const handleInputChange = (e) => {

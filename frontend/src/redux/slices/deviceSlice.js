@@ -61,19 +61,6 @@ export const createDevice = createAsyncThunk(
   }
 );
 
-export const updateDevice1 = createAsyncThunk(
-  'devices/update',
-  async ({ id, data }, { rejectWithValue }) => {
-    try {
-      // Add proper API endpoint formatting
-      const response = await deviceAPI.update(id, { data }); 
-      return response.data;
-    } catch (err) {
-      return rejectWithValue(err.response?.data || err.message);
-    }
-  }
-);
-
 // In deviceSlice.js
 export const updateDevice = createAsyncThunk(
   'devices/update',

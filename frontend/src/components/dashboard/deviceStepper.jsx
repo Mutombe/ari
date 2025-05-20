@@ -251,35 +251,6 @@ const dialogAnimation = {
   transition: { type: "spring", duration: 0.5 },
 };
 
-const DocumentUpload = ({ label, name, onChange, error, helperText }) => (
-  <FormControl
-    fullWidth
-    margin="normal"
-    error={error}
-    className={`border-2 border-dashed ${
-      error ? "border-red-200 bg-red-50" : "border-emerald-100"
-    } rounded-xl p-4 mb-4 transition-colors`}
-  >
-    <InputLabel>{label}</InputLabel>
-    <Button
-      component="label"
-      variant="outlined"
-      startIcon={<CloudUpload />}
-      fullWidth
-      sx={{ justifyContent: "start", textTransform: "none" }}
-    >
-      Upload {label}
-      <VisuallyHiddenInput
-        type="file"
-        name={name}
-        onChange={onChange}
-        accept=".pdf,.doc,.docx,image/*"
-      />
-    </Button>
-    {helperText && <FormHelperText>{helperText}</FormHelperText>}
-  </FormControl>
-);
-
 const DeviceUploadStepper = ({ open, onClose }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -380,39 +351,6 @@ const DeviceUploadStepper = ({ open, onClose }) => {
     },
   ];
 
-  const steps1 = [
-    {
-      title: "Basic Info",
-      icon: <Leaf size={24} />,
-      color: "emerald",
-      fields: ["device_name", "capacity"],
-    },
-    {
-      title: "Tech Specs",
-      icon: <Cpu size={24} />,
-      color: "amber",
-      fields: ["technologyType", "commissioningDate"],
-    },
-    {
-      title: "Location",
-      icon: <Globe size={24} />,
-      color: "blue",
-      fields: ["address", "latitude", "longitude", "postcode"],
-    },
-    {
-      title: "Grid Data",
-      icon: <BatteryCharging size={24} />,
-      color: "purple",
-      fields: ["meterIds", "voltageLevel", "connectionType"],
-    },
-    {
-      title: "Documents",
-      icon: <FileText size={24} />,
-      color: "rose",
-      fields: ["specsDoc", "locationMap", "certifications"],
-    },
-  ];
-
   const fuelTechnologyMap = {
     Solar: ["TC110", "TC120", "TC130", "TC140"],
     Wind: ["TC210", "TC220"],
@@ -434,7 +372,13 @@ const DeviceUploadStepper = ({ open, onClose }) => {
       title: "Tech Specs",
       icon: <Cpu size={24} />,
       color: "amber",
-      fields: ["fuel_type", "technology_type", "capacity", "commissioning_date", "effective_date"],
+      fields: [
+        "fuel_type",
+        "technology_type",
+        "capacity",
+        "commissioning_date",
+        "effective_date",
+      ],
     },
     {
       id: 2,
@@ -442,20 +386,36 @@ const DeviceUploadStepper = ({ open, onClose }) => {
       icon: <Globe size={24} />,
       color: "blue",
       fields: ["address", "latitude", "longitude", "postcode"],
-      
     },
     {
       id: 3,
       title: "Grid Data",
       icon: <BatteryCharging size={24} />,
       color: "blue",
-      fields: ["meter_ids", "network_owner", "connection_voltage", "grid_connection_details", "volume_evidence_type", "volume_evidence_other" ],
+      fields: [
+        "meter_ids",
+        "network_owner",
+        "connection_voltage",
+        "grid_connection_details",
+        "volume_evidence_type",
+        "volume_evidence_other",
+      ],
     },
     {
       id: 4,
       title: "Business Details",
       icon: <Building size={24} />,
-      fields: ["onsite_consumer", "onsite_consumer_details", "auxiliary_energy", "auxiliary_energy_details", "electricity_import_details","carbon_offset_registration", "labelling_scheme", "public_funding", "funding_end_date" ],
+      fields: [
+        "onsite_consumer",
+        "onsite_consumer_details",
+        "auxiliary_energy",
+        "auxiliary_energy_details",
+        "electricity_import_details",
+        "carbon_offset_registration",
+        "labelling_scheme",
+        "public_funding",
+        "funding_end_date",
+      ],
     },
     {
       id: 5,
@@ -464,6 +424,12 @@ const DeviceUploadStepper = ({ open, onClose }) => {
       fields: ["sf02", "sf02c", "metering", "diagram", "photos"],
     },
   ];
+
+  const ONSITE_CONSUMER_CHOICES = [
+    ["Yes", "Yes"],
+    ["No", "No"],
+  ];
+
 
   const StepIndicator = React.memo(({ index, active, step }) => (
     <motion.div
@@ -683,20 +649,6 @@ const DeviceUploadStepper = ({ open, onClose }) => {
                   ),
                 }}
               />
-              <TextField
-                label="Capacity (MW)"
-                name="capacity"
-                type="number"
-                value={formData.capacity}
-                onChange={handleInputChange}
-                error={!!errors.capacity}
-                helperText={errors.capacity}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">MW</InputAdornment>
-                  ),
-                }}
-              />
             </div>
           </StepCard>
         );
@@ -775,7 +727,31 @@ const DeviceUploadStepper = ({ open, onClose }) => {
                 )}
               </FormControl>
               <TextField
+                label="Capacity (MW)"
+                name="capacity"
+                type="number"
+                value={formData.capacity}
+                onChange={handleInputChange}
+                error={!!errors.capacity}
+                helperText={errors.capacity}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">MW</InputAdornment>
+                  ),
+                }}
+              />
+              <TextField
                 label="Commissioning Date"
+                type="date"
+                name="commissioningDate"
+                value={formData.commissioning_date}
+                onChange={handleInputChange}
+                error={!!errors.commissioning_date}
+                helperText={errors.commissioning_date}
+                InputLabelProps={{ shrink: true }}
+              />
+              <TextField
+                label="Effective Date"
                 type="date"
                 name="commissioningDate"
                 value={formData.commissioning_date}
@@ -880,6 +856,54 @@ const DeviceUploadStepper = ({ open, onClose }) => {
 
       case 4:
         return (
+          <StepCard
+            icon={steps[3].icon}
+            title="Grid Connection"
+            color={steps[3].color}
+          >
+            <div className="grid gap-4">
+              <FormControl fullWidth>
+                <InputLabel>On-site Consumer</InputLabel>
+                <Select
+                  name="onsite_consumer"
+                  value={formData.onsite_consumer}
+                  onChange={handleInputChange}
+                  required
+                >
+                  {ONSITE_CONSUMER_CHOICES.map(([value, label]) => (
+                    <MenuItem key={value} value={value}>
+                      {label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <TextField
+                  label="Connection Voltage"
+                  name="connection_voltage"
+                  value={formData.connection_voltage}
+                  onChange={handleInputChange}
+                />
+                <TextField
+                  label="Network Owner"
+                  name="network_owner"
+                  value={formData.network_owner}
+                  onChange={handleInputChange}
+                />
+                <TextField
+                  label="Grid Connection Details"
+                  name="grid_connection_details"
+                  value={formData.grid_connection_details}
+                  onChange={handleInputChange}
+                />
+              </div>
+            </div>
+          </StepCard>
+        );
+
+      case 5:
+        return (
           <>
             <StepCard
               icon={steps[4].icon}
@@ -895,14 +919,8 @@ const DeviceUploadStepper = ({ open, onClose }) => {
                   onRemove={() => setDocFile(null)}
                 />
 
-                <EDocumentUpload
-                  label="Location Maps"
-                />
-                <EDocumentUpload
-                  label="Certifications"
-                  accept=".pdf"
-
-                />
+                <EDocumentUpload label="Location Maps" />
+                <EDocumentUpload label="Certifications" accept=".pdf" />
               </div>
             </StepCard>
           </>

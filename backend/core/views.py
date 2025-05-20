@@ -12,26 +12,6 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from .permissions import IsDeviceOwner
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.db import transaction
-
-class RegisterViewz(APIView):
-    permission_classes = [AllowAny]
-    
-    def post(self, request):
-        serializer = UserRegistrationSerializer(data=request.data)
-        if serializer.is_valid():
-            try:
-                with transaction.atomic():
-                    user = serializer.save(is_active=True)
-                    refresh = RefreshToken.for_user(user)
-                    return Response({
-                        "detail": "Registration successful",
-                        "access": str(refresh.access_token),
-                        "refresh": str(refresh),
-                        "user": UserRegistrationSerializer(user).data
-                    }, status=status.HTTP_201_CREATED)
-            except Exception as e:
-                return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class RegisterView(APIView):
     permission_classes = [AllowAny]

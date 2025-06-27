@@ -84,14 +84,25 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'bwwsenpd9xzpqlukjygz',
-        'USER': 'u2ivk9a79taxpcze08dc',
-        'PASSWORD': 'GB91fxWguftsiytE47Z7uv99Grgbkb',
-        'HOST': 'bwwsenpd9xzpqlukjygz-postgresql.services.clever-cloud.com',
-        'PORT': '50013',
+        'NAME': 'ari_fullymodel',
+        'USER': 'ari_fullymodel',
+        'PASSWORD': '6e8a8219f98066a2c72a10193c062f1218859334',  # Replace with actual password
+        'HOST': 'qt94c.h.filess.io',
+        'PORT': '5434',
+        'OPTIONS': {
+            'options': '-c search_path=public,django_schema',
+            'connect_timeout': 5,
+        },
+        'CONN_MAX_AGE': 300,  # Persistent connections
     }
 }
 
+# Timezone settings
+USE_TZ = True
+TIME_ZONE = 'UTC'  # Matching your database timezone
+
+# Connection management (optional but recommended for production)
+DATABASES['default']['CONN_MAX_AGE'] = 500  # Persistent connections
 
 # SECURITY MIDDLEWARE SETTINGS
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

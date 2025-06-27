@@ -60,8 +60,6 @@ const countries = [
   "DRC",
 ];
 
-const fuelTypes = ["Solar", "Wind", "Hydro", "Biomass", "Diesel", "Hybrid"];
-
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
   clipPath: "inset(50%)",
@@ -186,62 +184,6 @@ const EDocumentUpload = ({
   );
 };
 
-const FileUploadCard = ({
-  label,
-  accept,
-  onUpload,
-  file,
-  onRemove,
-  required,
-  error,
-}) => (
-  <motion.div
-    whileHover={{ y: -2 }}
-    className={`border-2 border-dashed ${
-      error ? "border-red-200 bg-red-50" : "border-emerald-100"
-    } rounded-xl p-4 mb-4 transition-colors`}
-  >
-    <div className="flex items-center justify-between">
-      <div className="flex items-center space-x-3">
-        <UploadCloud
-          className={`${error ? "text-red-500" : "text-emerald-600"}`}
-        />
-        <div>
-          <p
-            className={`font-medium ${
-              error ? "text-red-600" : "text-gray-900"
-            }`}
-          >
-            {label} {required && <span className="text-red-500">*</span>}
-          </p>
-          <p className="text-sm text-gray-500">
-            {accept.replaceAll(".", " • ")}
-          </p>
-        </div>
-      </div>
-
-      {file ? (
-        <div className="flex items-center space-x-2">
-          <CheckCircle className="text-emerald-600" />
-          <p className="text-gray-600 text-sm">{file.name}</p>
-          <IconButton onClick={onRemove} size="small">
-            <X className="text-gray-400 hover:text-red-500" size={16} />
-          </IconButton>
-        </div>
-      ) : (
-        <input
-          type="file"
-          hidden
-          accept={accept}
-          onChange={(e) => onUpload(e.target.files[0])}
-          id={label}
-        />
-      )}
-    </div>
-    {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-  </motion.div>
-);
-
 const dialogAnimation = {
   initial: { scale: 0.9, opacity: 0 },
   animate: { scale: 1, opacity: 1 },
@@ -311,6 +253,7 @@ const DeviceUploadStepper = ({ open, onClose }) => {
   };
 
   const [formData, setFormData] = useState(initialFormState);
+
   const requiredDocuments = ["specsDoc", "certifications"];
   const DOCUMENT_TYPES = [
     {
@@ -354,6 +297,13 @@ const DeviceUploadStepper = ({ open, onClose }) => {
       description: "Photos of installation",
     },
   ];
+
+  const FUNDING_CHOICES = [
+    ["No", "No"],
+    ["Investment", "Investment"],
+    ["Production", "Production"],
+  ];
+
   const fuelTechnologyMap = {
     Solar: ["TC110", "TC120", "TC130", "TC140"],
     Wind: ["TC210", "TC220"],
@@ -799,19 +749,15 @@ const DeviceUploadStepper = ({ open, onClose }) => {
             message: "Device Upload Successful.",
             severity: "success",
           });
+          setIsSubmitting(false);
         })
         .catch((error) => {
           console.error("Submission error:", error);
           enqueueSnackbar(error.message || "Submission failed", {
             variant: "error",
           });
+          setIsSubmitting(false);
         });
-
-      setIsSubmitting(false);
-
-      // Submit device
-      //await deviceAPI.submit(response.data.id);
-
       // Handle success
       setSnackbar({
         open: true,
@@ -1238,6 +1184,21 @@ const DeviceUploadStepper = ({ open, onClose }) => {
                   required
                 >
                   {ONSITE_CONSUMER_CHOICES.map(([value, label]) => (
+                    <MenuItem key={value} value={value}>
+                      {label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl fullWidth>
+                <InputLabel>Public Funding</InputLabel>
+                <Select
+                  name="public_funding"
+                  value={formData.public_funding}
+                  onChange={handleInputChange}
+                  required
+                >
+                  {FUNDING_CHOICES.map(([value, label]) => (
                     <MenuItem key={value} value={value}>
                       {label}
                     </MenuItem>

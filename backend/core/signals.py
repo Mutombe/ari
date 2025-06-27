@@ -44,7 +44,9 @@ def handle_new_user(sender, instance, created, **kwargs):
         attachments = [
             settings.BASE_DIR / 'media/docs/ZIM-RECs Registration Process.pdf',
             settings.BASE_DIR / 'media/docs/Silver Carbon - Service Level Agreement.docx',
-            settings.BASE_DIR / 'media/docs/ZIM-REC Platform Guide.pdf'
+            settings.BASE_DIR / 'media/docs/SF-02-ProductionFacilityRegistration.docx',
+            settings.BASE_DIR / 'media/docs/SF-02C-OwnersDeclaration-Word-v1.1 Mandate (1).docx',
+            settings.BASE_DIR / 'media/docs/Africa-RECs Platform Guide.pdf'
         ]
         
         # Send user confirmation email with attachments

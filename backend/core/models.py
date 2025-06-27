@@ -81,20 +81,6 @@ class CustomUser(AbstractUser):
             'DRC': '🇨🇩',
         }
         return flag_mapping.get(self.country, '')
-    
-#class Profile(models.Model):
-    
-    #user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="profile")
-    #first_name = models.CharField(max_length=100, blank=True)
-    #last_name = models.CharField(max_length=100, blank=True)
-    #profile_picture = models.ImageField(
-        #upload_to="profile_pictures/", null=True, blank=True
-   # )
-    #created_at = models.DateTimeField(auto_now_add=True)
-    #updated_at = models.DateTimeField(auto_now=True)
-
-    #def __str__(self):
-        #return f"{self.user.username}'s Profile"
 
 
 class Device(models.Model):
@@ -221,6 +207,8 @@ class Device(models.Model):
 
     def save(self, *args, **kwargs):
         self.status_changed = self.status != self._original_status
+        # Add this debug print
+        print(f"Saving device with user_id: {self.user_id}, exists: {CustomUser.objects.filter(id=self.user_id).exists()}")
         super().save(*args, **kwargs)
         self._original_status = self.status
 

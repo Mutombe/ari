@@ -43,7 +43,7 @@ def handle_new_user(sender, instance, created, **kwargs):
         # Define attachment paths (modify these to your actual files)
         attachments = [
             settings.BASE_DIR / 'media/docs/ZIM-RECs Registration Process.pdf',
-            settings.BASE_DIR / 'media/docs/Silver Carbon - Service Level Agreement.docx',
+            settings.BASE_DIR / 'media/docs/ZCI - Service Level Agreement (updated)  (1).docx',
             settings.BASE_DIR / 'media/docs/SF-02-ProductionFacilityRegistration.docx',
             settings.BASE_DIR / 'media/docs/SF-02C-OwnersDeclaration-Word-v1.1 Mandate (1).docx',
             settings.BASE_DIR / 'media/docs/Africa-RECs Platform Guide.pdf'

@@ -19,6 +19,7 @@ import {
   HelpCircle,
   SquarePlus,
   Flag,
+  Mail,
 } from "lucide-react";
 import DeviceUploadStepper from "../dashboard/deviceStepper";
 import { motion, AnimatePresence } from "framer-motion";
@@ -145,6 +146,13 @@ const Navigation = () => {
               >
                 <BarChart2 className="mr-1 h-4 w-4" />
                 News
+              </Link>
+              <Link
+                to="/contact"
+                className="hover:text-amber-200 transition flex items-center"
+              >
+                <Mail className="mr-1 h-4 w-4" />
+                Contact
               </Link>
               {user && (
                 <>
@@ -302,6 +310,20 @@ const Navigation = () => {
                   >
                     <Info className="inline-block mr-2 h-4 w-4" />
                     About
+                  </Link>
+                  <Link
+                    to="/news"
+                    className="hover:bg-emerald-700 px-4 py-2 rounded"
+                  >
+                    <BarChart2 className="inline-block mr-2 h-4 w-4" />
+                    News
+                  </Link>
+                  <Link
+                    to="/contact"
+                    className="hover:bg-emerald-700 px-4 py-2 rounded"
+                  >
+                    <Mail className="inline-block mr-2 h-4 w-4" />
+                    Contact
                   </Link>
                   {user && (
                     <>

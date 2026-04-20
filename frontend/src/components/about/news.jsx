@@ -45,7 +45,27 @@ const newsData = [
     date: "May 15, 2025",
     image: "/rec3.jpg",
     icon: <Sun className="h-5 w-5" />,
-    url: "/https://www.facebook.com/share/p/18X5G5cDeX/?mibextid=wwXIfr"
+    url: "https://www.facebook.com/share/p/18X5G5cDeX/?mibextid=wwXIfr"
+  },
+  {
+    id: 4,
+    title: "Africa RECs a Renewable Energy Game-Changer, Says Expert",
+    description: "Energy experts highlight Africa RECs International as a transformative force for the continent's clean energy transition, unlocking new revenue streams for renewable producers and accelerating green investment across the region.",
+    category: "Market Trends",
+    date: "April 18, 2026",
+    image: "/rec5.jpg",
+    icon: <Zap className="h-5 w-5" />,
+    url: "https://zedgossip.net/renewable-energy-game-changer-expert/",
+  },
+  {
+    id: 5,
+    title: "Zambia, Africa Urged to Build Capacity in Carbon Trading",
+    description: "Industry leaders call on Zambia and the wider African continent to build local capacity in carbon trading and Renewable Energy Certificates, positioning the region to participate meaningfully in global climate markets.",
+    category: "Policy",
+    date: "April 15, 2026",
+    image: "/rec4.webp",
+    icon: <Globe className="h-5 w-5" />,
+    url: "https://www.zambiamonitor.com/zambia-africa-urged-to-build-capacity-in-carbon-trading/",
   },
 ];
 
@@ -123,9 +143,11 @@ const NewsPage = () => {
           {filteredNews.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredNews.map((newsItem) => (
-                <a 
-                  href={newsItem.url} 
+                <a
+                  href={newsItem.url}
                   key={newsItem.id}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="group bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
                 >
                   <div className="relative h-48 overflow-hidden">

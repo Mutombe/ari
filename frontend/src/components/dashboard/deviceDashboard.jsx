@@ -29,6 +29,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { fadeIn, staggerChildren } from "./animations";
 import DeviceUploadStepper from "./deviceStepper";
+import { DashboardSkeleton } from "./skeleton";
 import { useMediaQuery, useTheme, styled, FormHelperText, FormControl, InputLabel, Button} from "@mui/material";
 import { CloudUpload, Description, CheckCircle } from '@mui/icons-material';
 import {
@@ -390,13 +391,7 @@ const UserDashboard = () => {
     return total + Number(device.capacity || 0);
   }, 0);
 
-  if (loading)
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-600"></div>
-        <span className="ml-3 text-lg text-gray-700 dark:text-gray-200">Loading your devices...</span>
-      </div>
-    );
+  if (loading) return <DashboardSkeleton rows={6} columns={7} />;
 
   if (error)
     return (

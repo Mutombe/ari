@@ -562,8 +562,22 @@ const ProfilePage = () => {
       {/* Main content */}
       <div className="relative z-10 bg-white/90 backdrop-blur-sm rounded-2xl shadow-sm p-6 border border-gray-100">
         {loading && !profileData ? (
-          <div className="flex justify-center items-center py-12">
-            <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="space-y-5 py-4">
+            <div className="flex items-center gap-4">
+              <div className="skeleton rounded-full w-20 h-20" />
+              <div className="flex-1 space-y-3">
+                <div className="skeleton h-5 w-1/3 rounded-md" />
+                <div className="skeleton h-3.5 w-1/2 rounded-md" />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <div className="skeleton h-3 w-24 rounded-md" />
+                  <div className="skeleton h-10 w-full rounded-lg" />
+                </div>
+              ))}
+            </div>
           </div>
         ) : error ? (
           <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">

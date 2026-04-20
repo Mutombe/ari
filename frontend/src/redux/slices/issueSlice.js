@@ -118,7 +118,9 @@ const issueRequestSlice = createSlice({
     .addCase(fetchRequests.fulfilled, (state, action) => {
       state.status = 'succeeded';
       state.loading = false;
-      state.requests = action.payload.results;
+      state.requests = Array.isArray(action.payload)
+        ? action.payload
+        : action.payload?.results || [];
     })
     .addCase(fetchUserRequests.pending, (state) => {
       state.status = 'loading';
@@ -127,7 +129,9 @@ const issueRequestSlice = createSlice({
     .addCase(fetchUserRequests.fulfilled, (state, action) => {
       state.status = 'succeeded';
       state.loading = false;
-      state.requests = action.payload.results;
+      state.requests = Array.isArray(action.payload)
+        ? action.payload
+        : action.payload?.results || [];
     })
     .addCase(createIssueRequest.fulfilled, (state, action) => {
       const index = state.requests.findIndex(r => r.id === action.payload.id);

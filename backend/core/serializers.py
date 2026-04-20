@@ -209,7 +209,8 @@ class DeviceSerializer(serializers.ModelSerializer):
                     "Effective date must be after commissioning date"
                 )
             
-        if self.context['request'].user.is_superuser:
+        request = self.context.get('request')
+        if request and request.user.is_authenticated and request.user.is_superuser:
             if 'rejection_reason' in data:
                 if data.get('status') != 'Rejected' and data['rejection_reason']:
                     raise serializers.ValidationError(

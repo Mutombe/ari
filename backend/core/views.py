@@ -99,6 +99,19 @@ class DeviceViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsDeviceOwner]
     queryset = Device.objects.all().select_related('user').prefetch_related('documents')
 
+    def get_queryset(self):
+        qs = Device.objects.all().select_related('user').prefetch_related('documents')
+        user = self.request.user
+        if not user.is_superuser:
+            qs = qs.filter(user=user)
+        user_id = self.request.query_params.get('user_id')
+        if user_id:
+            try:
+                qs = qs.filter(user_id=int(user_id))
+            except (TypeError, ValueError):
+                return qs.none()
+        return qs
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
@@ -137,6 +150,19 @@ class IssueRequestViewSet(viewsets.ModelViewSet):
     serializer_class = IssueRequestSerializer
     permission_classes = [IsAuthenticated, IsDeviceOwner]
     queryset = IssueRequest.objects.all().select_related('user', 'device')
+
+    def get_queryset(self):
+        qs = IssueRequest.objects.all().select_related('user', 'device')
+        user = self.request.user
+        if not user.is_superuser:
+            qs = qs.filter(user=user)
+        user_id = self.request.query_params.get('user_id')
+        if user_id:
+            try:
+                qs = qs.filter(user_id=int(user_id))
+            except (TypeError, ValueError):
+                return qs.none()
+        return qs
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

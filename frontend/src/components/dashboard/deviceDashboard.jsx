@@ -401,7 +401,11 @@ const UserDashboard = () => {
             <div className="flex">
               <div className="flex-1">
                 <h3 className="text-red-800 dark:text-red-300 font-medium">Error Loading Devices</h3>
-                <p className="text-red-700 dark:text-red-200">{error}</p>
+                <p className="text-red-700 dark:text-red-200">
+                  {typeof error === 'string'
+                    ? error
+                    : error?.detail || error?.message || 'Failed to load devices'}
+                </p>
               </div>
               <button
                 onClick={handleRefresh}

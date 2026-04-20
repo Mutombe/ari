@@ -13,6 +13,24 @@ const initialState = {
   },
 };
 
+const toErrorMessage = (payload, fallback = 'Operation failed') => {
+  if (!payload) return fallback;
+  if (typeof payload === 'string') return payload;
+  if (typeof payload.detail === 'string') return payload.detail;
+  if (typeof payload.error === 'string') return payload.error;
+  if (typeof payload.message === 'string') return payload.message;
+  if (Array.isArray(payload.messages) && payload.messages.length) {
+    const first = payload.messages[0];
+    if (typeof first === 'string') return first;
+    if (first && typeof first.message === 'string') return first.message;
+  }
+  try {
+    return JSON.stringify(payload);
+  } catch {
+    return fallback;
+  }
+};
+
 export const fetchDeviceById = createAsyncThunk(
   'devices/fetchById',
   async (deviceId, { rejectWithValue }) => {
@@ -118,7 +136,7 @@ const deviceSlice = createSlice({
       .addCase(fetchDevices.rejected, (state, action) => {
         state.status = 'failed';
         state.loading = false;
-        state.error = action.payload?.error || 'Failed to fetch devices';
+        state.error = toErrorMessage(action.payload, 'Failed to fetch devices');
       })
       .addCase(fetchUserDevices.pending, (state) => {
         state.status = 'loading';
@@ -132,7 +150,7 @@ const deviceSlice = createSlice({
       .addCase(fetchUserDevices.rejected, (state, action) => {
         state.status = 'failed';
         state.loading = false;
-        state.error = action.payload?.error || 'Failed to fetch devices';
+        state.error = toErrorMessage(action.payload, 'Failed to fetch devices');
       })
       
       // Create Device
@@ -166,7 +184,7 @@ const deviceSlice = createSlice({
         action => action.type.endsWith('/rejected'),
         (state, action) => {
           state.status = 'failed';
-          state.error = action.payload?.error || action.payload || 'Operation failed';
+          state.error = toErrorMessage(action.payload);
         }
       );
   }

@@ -466,7 +466,14 @@ const AdminDashboard = () => {
         <div className="flex">
           <div className="flex-1">
             <h3 className="text-red-800 font-medium">Error Loading Data</h3>
-            <p className="text-red-700">{devicesError || requestsError}</p>
+            <p className="text-red-700">
+              {(() => {
+                const e = devicesError || requestsError;
+                if (!e) return null;
+                if (typeof e === 'string') return e;
+                return e.detail || e.message || 'Failed to load data';
+              })()}
+            </p>
           </div>
           <button
             onClick={handleRefresh}

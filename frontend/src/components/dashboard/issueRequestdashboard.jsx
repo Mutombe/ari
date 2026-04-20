@@ -38,6 +38,7 @@ import {
 import { fetchDevices } from "../../redux/slices/deviceSlice";
 import { Modal, Box, Backdrop, Snackbar, Alert } from "@mui/material";
 import { useMediaQuery, useTheme } from "@mui/material";
+import { DashboardSkeleton } from "./skeleton";
 
 const IssueRequestDashboard = () => {
   const dispatch = useDispatch();
@@ -63,7 +64,8 @@ const IssueRequestDashboard = () => {
   });
 
   // Redux selectors
-  const { requests } = useSelector(state => state.issueRequests);
+  const requests = useSelector(state => state.issueRequests?.requests) || [];
+  const loading = useSelector(state => state.issueRequests?.loading) || false;
   const devices = useSelector(isAdmin ? selectAllDevicesForAdmin : selectUserDevices);
   const dashboardStats = useSelector(selectDashboardData);
   const recentSubmissions = useSelector((state) => selectRecentSubmissions(state, 7));
@@ -258,15 +260,8 @@ const IssueRequestDashboard = () => {
     }
   ];
 
-  if (requests.loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-emerald-500 border-t-transparent"></div>
-          <p className="mt-4 text-lg text-gray-700 dark:text-gray-300">Loading your request data...</p>
-        </div>
-      </div>
-    );
+  if (loading) {
+    return <DashboardSkeleton rows={6} columns={6} />;
   }
 
   return (
